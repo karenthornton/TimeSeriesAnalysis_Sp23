@@ -125,4 +125,10 @@ df
 #as.ts(x) converts an object to a time series
 #
 
+# par() function is used to set graphical parameters
+#par(mfrows)???
+
+#formatC() gets your data in the format you want
+#x1.fmt=formatC(x1,format="f", digits =3,...)
+
 ```
