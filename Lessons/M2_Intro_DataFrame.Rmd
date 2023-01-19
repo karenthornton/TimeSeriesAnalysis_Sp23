@@ -117,3 +117,12 @@ as.data.frame(df[,1])
 df <- df[,-2]
 df
 ```
+
+```{r}
+##More notes
+
+#ts(data = NA, start =1, end = numeric(), frequency =1,...)
+#as.ts(x) converts an object to a time series
+#
+
+```
