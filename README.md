@@ -1,4 +1,5 @@
 # ENVIRON 790.30 Time Series Analysis for Energy Data - Spring 2023
+#Name: Karen Thornton
 
 
 This is the class repository for Time Series Analysis for Energy Data. <br>
