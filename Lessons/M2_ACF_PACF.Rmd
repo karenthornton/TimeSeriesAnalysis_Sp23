@@ -50,7 +50,7 @@ getwd()
 # my output was "/Users/lmm89/OneDrive/Duke_University/9_Spring2022/ENV790_TSA/Git_Repo/ENV790_TimeSeriesAnalysis_Sp2022_v2" meaning current directory is my project folder, therefore I only need to use "."
 # if output was "/Users/lmm89/OneDrive/Duke_University/9_Spring2022/ENV790_TSA/Git_Repo/ENV790_TimeSeriesAnalysis_Sp2022_v2/Lessons" then I would need to use ".."
 
-raw_inflow_data <- read.table(file="./Data/inflowtimeseries.txt",header=FALSE,skip=0)
+raw_inflow_data <- read.table(file="/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/inflowtimeseries.txt",header=FALSE,skip=0)
 
 #If you want specific columns just trim the table
 raw_inflow_data <- raw_inflow_data[,1:5] #the space before the comma means you want all rows
@@ -72,7 +72,7 @@ The data sets we will work with will be index by time, remember we are doing TIM
 ```{r}
 #using package lubridate
 my_date <- paste(raw_inflow_data[,1],raw_inflow_data[,2],sep="-")
-my_date <- my(my_date)  #function my from package lubridate
+my_date <- my(my_date)  #function my from package lubridate and means month year
 head(my_date)
 #add that to inflow_data 
 inflow_data <- cbind(my_date,raw_inflow_data[,3:5])
@@ -140,6 +140,7 @@ ggplot(inflow_data, aes(x=my_date, y=HP1)) +
 ggplot(inflow_data, aes(x=my_date, y=Inflow)) +
             geom_line(aes(y=HP1,col="HP1")) +
             geom_line(aes(y=HP2,col="HP2")) +
+            geom_line(aes(y=HP3,col="HP3"))+
             xlab("Time") +
             labs(color="Reservoir")
 ```
@@ -154,4 +155,9 @@ ts_inflow_data
 ```
 
 Note that ts_inflow_data has information on start, end and frequency. We will discuss frequency in future lectures, for now let's just keep the default value for frequency which is 1.
+
+```{r}
+acf(ts_inflow_data[,1])
+
+```
 
