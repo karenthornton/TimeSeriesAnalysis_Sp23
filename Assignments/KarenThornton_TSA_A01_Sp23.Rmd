@@ -19,12 +19,17 @@ When you have completed the assignment, **Knit** the text and code into a single
 
 Q1. What are your previous experiences with time series analysis, R, and Git? 
 
+
 > Answer: 
+
+I don't have much experience with time series apart from the short section in EDA last year. I have experience with R from EDA and a little from my internship this past summer. My experience with Git is from EDA as well. 
 
 
 Q2. (Only if you choose to use git) Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file as instructed on the recorded video "Getting started with Git and Github". 
 
 > Answer: 
+
+https://github.com/karenthornton/TimeSeriesAnalysis_Sp23.git
 
 
 Q3. For this part we just want to see the path to your R project. No need to do anything. The output will be automatically generated once you knit you file. 
