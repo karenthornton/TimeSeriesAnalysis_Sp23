@@ -158,6 +158,7 @@ Note that ts_inflow_data has information on start, end and frequency. We will di
 
 ```{r}
 acf(ts_inflow_data[,1])
+pacf(ts_inflow_data[,1])
 
 ```
 
