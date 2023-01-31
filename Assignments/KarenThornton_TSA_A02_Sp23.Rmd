@@ -1,7 +1,7 @@
 ---
 title: "ENV 790.30 - Time Series Analysis for Energy Data | Spring 2023"
 subtitle: "Assignment 2 - Due date 02/03/23"
-author: "Student Name"
+author: "Karen Thornton"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -22,7 +22,10 @@ R packages needed for this assignment:"forecast","tseries", and "dplyr". Install
 
 ```{r}
 #Load/install required package here
-
+library(forecast)
+#install.packages("tseries")
+library(tseries)
+library(dplyr)
 ```
 
 
@@ -32,7 +35,7 @@ Consider the data provided in the spreadsheet "Table_10.1_Renewable_Energy_Produ
 
 ```{r}
 #Importing data set
-
+Renewable_Energy <- read.csv(file = "/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source-Edit.csv", header = TRUE, dec = ".", sep=",",stringsAsFactors = TRUE)
 ```
 
 
@@ -40,7 +43,9 @@ Consider the data provided in the spreadsheet "Table_10.1_Renewable_Energy_Produ
 You will work only with the following columns: Total Biomass Energy Production, Total Renewable Energy Production, Hydroelectric Power Consumption. Create a data frame structure with these three time series only. Use the command head() to verify your data.
 
 ```{r}
+Renewable_Energy <- select(Renewable_Energy, c("Month","Total.Biomass.Energy.Production","Total.Renewable.Energy.Production","Hydroelectric.Power.Consumption"))
 
+head(Renewable_Energy)
 ```
 
 
@@ -48,7 +53,8 @@ You will work only with the following columns: Total Biomass Energy Production, 
 Transform your data frame in a time series object and specify the starting point and frequency of the time series using the function ts().
 
 ```{r}
-
+as.Date(Renewable_Energy$Month, format= "%Y %B")
+#ts_Rewnewable_Energy <- ts(Renewable_Energy, frequency = 12, start = 1)
 ```
 
 
