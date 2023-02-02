@@ -53,8 +53,12 @@ head(Renewable_Energy)
 Transform your data frame in a time series object and specify the starting point and frequency of the time series using the function ts().
 
 ```{r}
-as.Date(Renewable_Energy$Month, format= "%Y %B")
-#ts_Rewnewable_Energy <- ts(Renewable_Energy, frequency = 12, start = 1)
+library(lubridate)
+Renewable_Energy$Month <- ym(Renewable_Energy$Month)
+nenergy <- ncol(Renewable_Energy)-1
+nobs <- nrow(Renewable_Energy) 
+ts_Rewnewable_Energy <- ts(Renewable_Energy[,2:(2+nenergy-1)], frequency = 12, start = 1)
+ts_Rewnewable_Energy
 ```
 
 
@@ -62,7 +66,13 @@ as.Date(Renewable_Energy$Month, format= "%Y %B")
 Compute mean and standard deviation for these three series.
 
 ```{r}
+mean(ts_Rewnewable_Energy[,1])
+mean(ts_Rewnewable_Energy[,2])
+mean(ts_Rewnewable_Energy[,3])
 
+sd(ts_Rewnewable_Energy[,1])
+sd(ts_Rewnewable_Energy[,2])
+sd(ts_Rewnewable_Energy[,3])
 ```
 
 
@@ -70,7 +80,7 @@ Compute mean and standard deviation for these three series.
 Display and interpret the time series plot for each of these variables. Try to make your plot as informative as possible by writing titles, labels, etc. For each plot add a horizontal line at the mean of each series in a different color.
 
 ```{r}
-
+ggplot()
 ```
 
 
