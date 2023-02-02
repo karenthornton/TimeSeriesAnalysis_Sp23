@@ -32,7 +32,7 @@ Let's continue working with our inflow data for reservoirs in Brazil.
 ```{r}
 
 #Importing time series data from text file#
-raw_inflow_data <- read.table(file="../Data/inflowtimeseries.txt",header=FALSE,skip=0)
+raw_inflow_data <- read.table(file="/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/inflowtimeseries.txt",header=FALSE,skip=0)
 
 #Trim the table to include only columns you need
 nhydro <- ncol(raw_inflow_data)-2
@@ -94,7 +94,7 @@ Note our last observation is from August 2011 but the data file was filled with 
 
 ```{r}
 #Remove last year by replacing current data frame
-inflow_data <- inflow_data[1:(nobs-412,]
+inflow_data <- inflow_data[1:(nobs-12),]
 
 #update object with number of observations
 nobs <- nobs-12
@@ -109,7 +109,8 @@ Fixed!
 Many of the functions we will use require a time series object. You can transform your data in a time series using the function *ts()*. 
 
 ```{r}
-
+ts_inflow_data <- ts(inflow_data[,2:(2+nhydro-1)], frequency = 12, start = c(1931,1)) #adding the start will add the date (year) instead of just numbers
+ts_inflow_data
 ```
 
 
@@ -118,9 +119,12 @@ Many of the functions we will use require a time series object. You can transfor
 Let's use functions Acf() and Pacf() from package "forecast".
 
 ```{r acf}
-
-
-
+for(i in 1:nhydro){
+  par(mfrow=c(1,2))
+  Acf(ts_inflow_data[,i], lag.max = 40, main = paste0("HP",i))
+  Pacf(ts_inflow_data[,i], lag.max = 40, main = paste0("HP",i))
+}
+#main labels the graphs
 ```
 
 
@@ -130,12 +134,18 @@ Let's identify and remove trend component like we leaned on the recorded videos 
 
 ```{r}
 #Create vector t
-
-
+t <- 1:nobs
+iHP=4
 
 #Fit a linear trend to TS of iHP
+#dummies = seasonaldummy(ts_inflow_data[t,iHP])
+#lm(ts_inflow_data~dummies, inflow_data)
+linear_trend <- lm(inflow_data[,iHP+1] ~ t)
+summary(linear_trend)
 
-
+ggplot(inflow_data,aes(x=my_date, y=inflow_data[,iHP+1]))+
+  geom_line(color="blue")+
+  geom_smooth(method = "lm", color= "red")
 ```
 
 
