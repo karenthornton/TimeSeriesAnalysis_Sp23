@@ -260,7 +260,7 @@ Used to detect stochastic trend.
 ```{r}
 #Null hypothesis is that data has a unit root
 print("Results for ADF test/n")
-print(adf.test(ts_inflow_data[,iHP]), alternative = "stationarity")
+print(adf.test(ts_inflow_data[,iHP]), alternative = "stationarity")#explosive instead of alternative
 
 #Now let's try the yearly data
 print("Results for ADF test on yearly data/n")
