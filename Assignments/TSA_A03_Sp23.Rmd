@@ -66,27 +66,20 @@ library(ggplot2)
 name <- colnames(Renewable_Energy)
 for(i in 1:nenergy){
   par(mfrow=c(1,3))
+  #try using plot instead of ggplot
   print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,(i+1)])) +
           geom_line(color="blue") +
           ylab(paste0("Energy ",colnames(Renewable_Energy)[(1+i)],sep="")))
   acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
-  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=paste0("HP",i),ylim=c(-1,1))
+  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=paste0("Energy",i),ylim=c(-1,1))
 }
-
-#          print(ggplot(Renewable_Energy, aes(x=Month))+
-        #geom_line(aes(y=name[i+1])))
-
-#geom_line(aes(y=name[i+1]))+
-    #xlab("Time")+
-    #ylab("Production/Consumption")+
-    #labs(title = "Renewable Energy")
 ```
 
 ### Q2
 From the plot in Q1, do the series Total Biomass Energy Production, Total Renewable Energy Production, Hydroelectric Power Consumption appear to have a trend? If yes, what kind of trend?
 
 #Answer:
-
+Yes, all three of them seem to have a trend. Biomass and Renewable Energy have a positive linear trend and Hydroelectric has a negative linear trend. 
 
 ### Q3
 Use the *lm()* function to fit a linear trend to the three time series. Ask R to print the summary of the regression. Interpret the regression output, i.e., slope and intercept. Save the regression coefficients for further analysis.
@@ -94,32 +87,75 @@ Use the *lm()* function to fit a linear trend to the three time series. Ask R to
 ```{r}
 #Create vector t
 t <- 1:nobs
-iHP=3
 
-#Fit a linear trend to TS of iHP
-linear_trend <- lm(Renewable_Energy[,iHP+1] ~ t)
+for (i in 1:nenergy) {
+  linear_trend <- lm(Renewable_Energy[,i+1] ~ t)
+}
 summary(linear_trend)
 
 #interpret the regression output: The intercept is 260 and the slope is -0.0829
 
 beta0 <- linear_trend$coefficients[1]
 beta1 <- linear_trend$coefficients[2]
+```
 
+```{r}
+#plot
+for (i in 1:nenergy) {
+  print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,(i+1)])) +
+            geom_line(color="blue") +
+            ylab(paste0("Inflow ",colnames(Renewable_Energy)[(i+1)],sep="")) +
+            geom_smooth(color="red",method="lm"))
+}
 ```
  
 ### Q4
 Use the regression coefficients from Q3 to detrend the series. Plot the detrended series and compare with the plots from Q1. What happened? Did anything change?
 
 ```{r}
-detrend_Renewable_Energy <- Renewable_Energy[,(iHP+1)]-(beta0+beta1*t)
 
-ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,iHP+1]))+
-  geom_line(color="blue")+
-  geom_line(aes(y=detrend_Renewable_Energy), color="green")
+  detrend_Renewable_Energy_1 <- Renewable_Energy[,2]-(beta0+beta1*t)
+
+  print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,2]))+
+    geom_line(color="blue")+
+    geom_line(aes(y=detrend_Renewable_Energy_1), color="green")+
+      ylab(paste0("Energy ",colnames(Renewable_Energy)[2],sep="")))
+  
+   detrend_Renewable_Energy_2 <- Renewable_Energy[,3]-(beta0+beta1*t)
+
+  print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,3]))+
+    geom_line(color="blue")+
+    geom_line(aes(y=detrend_Renewable_Energy_2), color="green")+
+      ylab(paste0("Energy ",colnames(Renewable_Energy)[3],sep="")))
+  
+   detrend_Renewable_Energy_3 <- Renewable_Energy[,4]-(beta0+beta1*t)
+
+  print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,4]))+
+    geom_line(color="blue")+
+    geom_line(aes(y=detrend_Renewable_Energy_3), color="green")+
+      ylab(paste0("Energy ",colnames(Renewable_Energy)[4],sep="")))
+
 ```
 
 ### Q5
 Plot ACF and PACF for the detrended series and compare with the plots from Q1. Did the plots change? How?
+
+```{r}
+  par(mfrow=c(1,2))
+  acf(detrend_Renewable_Energy_1,lag.max = 40,main=name[2],ylim=c(-1,1))
+  pacf(detrend_Renewable_Energy_1,lag.max = 40,
+       main=paste0("Biomass"),ylim=c(-1,1))
+  
+  par(mfrow=c(1,2))
+  acf(detrend_Renewable_Energy_2,lag.max = 40,main=name[3],ylim=c(-1,1))
+  pacf(detrend_Renewable_Energy_2,lag.max = 40,
+       main=paste0("Renewable Energy"),ylim=c(-1,1))
+  
+  par(mfrow=c(1,2))
+  acf(detrend_Renewable_Energy_3,lag.max = 40,main=name[4],ylim=c(-1,1))
+  pacf(detrend_Renewable_Energy_3,lag.max = 40,
+       main=paste0("Hydroelectric"),ylim=c(-1,1))
+```
 
 ## Seasonal Component
 
@@ -128,8 +164,47 @@ Set aside the detrended series and consider the original series again from Q1 to
 ### Q6
 Do the series seem to have a seasonal trend? Which serie/series? Use function *lm()* to fit a seasonal means model (i.e. using the seasonal dummies) to this/these time series. Ask R to print the summary of the regression. Interpret the regression output. Save the regression coefficients for further analysis.
 
+```{r}
+#The Hydroelectric seems to have a seasonal trend
+
+#First create the seasonal dummies
+dummies <- seasonaldummy(ts_Renewable_Energy[,3])  
+
+#Then fit a linear model to the seasonal dummies
+seas_means_model=lm(Renewable_Energy[,(4)]~dummies)
+summary(seas_means_model)
+
+#Store regression coefficients
+beta_int=seas_means_model$coefficients[1]
+beta_coeff=seas_means_model$coefficients[2:12]
+
+#compute seasonal component
+Energy_seas_comp=array(0,nobs)
+for(i in 1:nobs){
+  Energy_seas_comp[i]=(beta_int+beta_coeff%*%dummies[i,])
+}
+```
+
+```{r}
+#plot
+ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,4])) +
+            geom_line(color="blue") +
+            ylab(paste0(colnames(Renewable_Energy)[(4)],sep="")) +
+            geom_line(aes(y=Energy_seas_comp), col="red")
+```
 ### Q7
 Use the regression coefficients from Q6 to deseason the series. Plot the deseason series and compare with the plots from part Q1. Did anything change?
+
+```{r}
+#Removing seasonal component
+deseason_Renewable_Energy <- inflow_data[,(1+iHP)]-inflow_seas_comp
+
+#Understanding what we did
+ggplot(inflow_data, aes(x=my_date, y=inflow_data[,(1+iHP)])) +
+            geom_line(color="blue") +
+            ylab(paste0("Inflow ",colnames(inflow_data)[(1+iHP)],sep="")) +
+            geom_line(aes(y=deseason_inflow_data), col="green")
+```
 
 ### Q8
 Plot ACF and PACF for the deseason series and compare with the plots from Q1. Did the plots change? How?
