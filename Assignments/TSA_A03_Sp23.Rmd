@@ -66,25 +66,57 @@ library(ggplot2)
 name <- colnames(Renewable_Energy)
 for(i in 1:nenergy){
   par(mfrow=c(1,3))
-  ggplot(Renewable_Energy$name[i+1], aes(x=Month))+
-    geom_line(aes(y=name[i+1]))+
-    xlab("Time")+
-    ylab("Production/Consumption")+
-    labs(title = "Renewable Energy")
+  print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,(i+1)])) +
+          geom_line(color="blue") +
+          ylab(paste0("Energy ",colnames(Renewable_Energy)[(1+i)],sep="")))
   acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
   pacf(ts_Renewable_Energy[,i],lag.max = 40,main=paste0("HP",i),ylim=c(-1,1))
 }
 
+#          print(ggplot(Renewable_Energy, aes(x=Month))+
+        #geom_line(aes(y=name[i+1])))
+
+#geom_line(aes(y=name[i+1]))+
+    #xlab("Time")+
+    #ylab("Production/Consumption")+
+    #labs(title = "Renewable Energy")
 ```
 
 ### Q2
 From the plot in Q1, do the series Total Biomass Energy Production, Total Renewable Energy Production, Hydroelectric Power Consumption appear to have a trend? If yes, what kind of trend?
 
+#Answer:
+
+
 ### Q3
 Use the *lm()* function to fit a linear trend to the three time series. Ask R to print the summary of the regression. Interpret the regression output, i.e., slope and intercept. Save the regression coefficients for further analysis.
+
+```{r}
+#Create vector t
+t <- 1:nobs
+iHP=3
+
+#Fit a linear trend to TS of iHP
+linear_trend <- lm(Renewable_Energy[,iHP+1] ~ t)
+summary(linear_trend)
+
+#interpret the regression output: The intercept is 260 and the slope is -0.0829
+
+beta0 <- linear_trend$coefficients[1]
+beta1 <- linear_trend$coefficients[2]
+
+```
  
 ### Q4
 Use the regression coefficients from Q3 to detrend the series. Plot the detrended series and compare with the plots from Q1. What happened? Did anything change?
+
+```{r}
+detrend_Renewable_Energy <- Renewable_Energy[,(iHP+1)]-(beta0+beta1*t)
+
+ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,iHP+1]))+
+  geom_line(color="blue")+
+  geom_line(aes(y=detrend_Renewable_Energy), color="green")
+```
 
 ### Q5
 Plot ACF and PACF for the detrended series and compare with the plots from Q1. Did the plots change? How?
