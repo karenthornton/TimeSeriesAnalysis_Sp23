@@ -67,45 +67,58 @@ name <- colnames(Renewable_Energy)
 for(i in 1:nenergy){
   par(mfrow=c(1,3))
   #try using plot instead of ggplot
+  acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
+  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=paste0("Energy",i),ylim=c(-1,1))
+  #autoplot(Renewable_Energy[,i+1])
   print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,(i+1)])) +
           geom_line(color="blue") +
           ylab(paste0("Energy ",colnames(Renewable_Energy)[(1+i)],sep="")))
-  acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
-  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=paste0("Energy",i),ylim=c(-1,1))
 }
+
+#I can't get the ggplot to be with the other two plots
 ```
 
 ### Q2
 From the plot in Q1, do the series Total Biomass Energy Production, Total Renewable Energy Production, Hydroelectric Power Consumption appear to have a trend? If yes, what kind of trend?
 
 #Answer:
-Yes, all three of them seem to have a trend. Biomass and Renewable Energy have a positive linear trend and Hydroelectric has a negative linear trend. 
+Yes, all three of them seem to have a trend. Biomass and Renewable Energy have a positive linear trend and Hydroelectric has a negative linear trend (this trend is less strong than the other two).It also looks like the Hydroelectric Power consumption has a seasonal trend.
 
 ### Q3
 Use the *lm()* function to fit a linear trend to the three time series. Ask R to print the summary of the regression. Interpret the regression output, i.e., slope and intercept. Save the regression coefficients for further analysis.
 
 ```{r}
 #Create vector t
-t <- 1:nobs
+t <- c(1:nobs)
 
-for (i in 1:nenergy) {
-  linear_trend <- lm(Renewable_Energy[,i+1] ~ t)
-}
-summary(linear_trend)
+linear_trend_1 <- lm(Renewable_Energy[,2]~t)
+linear_trend_2 <- lm(Renewable_Energy[,3]~t)
+linear_trend_3 <- lm(Renewable_Energy[,4]~t)
 
-#interpret the regression output: The intercept is 260 and the slope is -0.0829
+#for (i in 1:nenergy) {
+ # linear_trend <- lm(Renewable_Energy[,i+1] ~ t)
+#}
+summary(linear_trend_1)
+summary(linear_trend_2)
+summary(linear_trend_3)
 
-beta0 <- linear_trend$coefficients[1]
-beta1 <- linear_trend$coefficients[2]
+#interpret the regression output: The intercept is the first coefficient and the slope is the second coefficient
+
+beta0_1 <- as.numeric(linear_trend_1$coefficients[1])
+beta1_1 <- as.numeric(linear_trend_1$coefficients[2])
+beta0_2 <- as.numeric(linear_trend_2$coefficients[1])
+beta1_2 <- as.numeric(linear_trend_2$coefficients[2])
+beta0_3 <- as.numeric(linear_trend_3$coefficients[1])
+beta1_3 <- as.numeric(linear_trend_3$coefficients[2])
 ```
 
 ```{r}
-#plot
+#plot for visual aid
 for (i in 1:nenergy) {
   print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,(i+1)])) +
-            geom_line(color="blue") +
-            ylab(paste0("Inflow ",colnames(Renewable_Energy)[(i+1)],sep="")) +
-            geom_smooth(color="red",method="lm"))
+          geom_line(color="blue") +
+          ylab(paste0("Inflow ",colnames(Renewable_Energy)[(i+1)],sep="")) +
+          geom_smooth(color="red",method="lm"))
 }
 ```
  
@@ -114,21 +127,21 @@ Use the regression coefficients from Q3 to detrend the series. Plot the detrende
 
 ```{r}
 
-  detrend_Renewable_Energy_1 <- Renewable_Energy[,2]-(beta0+beta1*t)
+  detrend_Renewable_Energy_1 <- Renewable_Energy[,2]-(beta0_1+beta1_1*t)
 
   print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,2]))+
     geom_line(color="blue")+
     geom_line(aes(y=detrend_Renewable_Energy_1), color="green")+
       ylab(paste0("Energy ",colnames(Renewable_Energy)[2],sep="")))
   
-   detrend_Renewable_Energy_2 <- Renewable_Energy[,3]-(beta0+beta1*t)
+   detrend_Renewable_Energy_2 <- Renewable_Energy[,3]-(beta0_2+beta1_2*t)
 
   print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,3]))+
     geom_line(color="blue")+
     geom_line(aes(y=detrend_Renewable_Energy_2), color="green")+
       ylab(paste0("Energy ",colnames(Renewable_Energy)[3],sep="")))
   
-   detrend_Renewable_Energy_3 <- Renewable_Energy[,4]-(beta0+beta1*t)
+   detrend_Renewable_Energy_3 <- Renewable_Energy[,4]-(beta0_3+beta1_3*t)
 
   print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,4]))+
     geom_line(color="blue")+
@@ -136,6 +149,9 @@ Use the regression coefficients from Q3 to detrend the series. Plot the detrende
       ylab(paste0("Energy ",colnames(Renewable_Energy)[4],sep="")))
 
 ```
+
+#Answer:
+The detrended lines look different than the original, especially for biomass and renewable energy (hydroelectric stayed mostly the same shape which means the trend was weak). The mean is closer to zero for the detrended lines. 
 
 ### Q5
 Plot ACF and PACF for the detrended series and compare with the plots from Q1. Did the plots change? How?
@@ -156,6 +172,9 @@ Plot ACF and PACF for the detrended series and compare with the plots from Q1. D
   pacf(detrend_Renewable_Energy_3,lag.max = 40,
        main=paste0("Hydroelectric"),ylim=c(-1,1))
 ```
+
+#Answer:
+It doesn't look like the plots have changed too much. The only thing I notice is the Hydroelectric ACF looks even more seasonal than before. 
 
 ## Seasonal Component
 
@@ -199,7 +218,7 @@ Use the regression coefficients from Q6 to deseason the series. Plot the deseaso
 #Removing seasonal component
 deseason_Renewable_Energy <- Renewable_Energy[,4]-Energy_seas_comp
 
-#Understanding what we did
+#plot
 ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,4])) +
             geom_line(color="blue") +
             ylab(paste0(colnames(Renewable_Energy)[4],sep="")) +
@@ -215,3 +234,6 @@ Plot ACF and PACF for the deseason series and compare with the plots from Q1. Di
   pacf(deseason_Renewable_Energy,lag.max = 40,
        main=paste0("Hydroelectric"),ylim=c(-1,1))
 ```
+
+#Answer:
+Yes, the plots from Q8 are different than Q1. Since taking the seasonal trend out, the hydroelectric power consumption ACF doesn't look seasonal (no ups and downs). 
