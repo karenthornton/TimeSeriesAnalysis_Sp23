@@ -91,9 +91,7 @@ linear_trend_1 <- lm(Renewable_Energy[,2]~t)
 linear_trend_2 <- lm(Renewable_Energy[,3]~t)
 linear_trend_3 <- lm(Renewable_Energy[,4]~t)
 
-#for (i in 1:nenergy) {
- # linear_trend <- lm(Renewable_Energy[,i+1] ~ t)
-#}
+
 summary(linear_trend_1)
 summary(linear_trend_2)
 summary(linear_trend_3)
