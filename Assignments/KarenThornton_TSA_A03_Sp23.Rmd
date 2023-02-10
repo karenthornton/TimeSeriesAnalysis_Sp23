@@ -64,18 +64,14 @@ Create a plot window that has one row and three columns. And then for each objec
 ```{r}
 library(ggplot2)
 name <- colnames(Renewable_Energy)
-for(i in 1:nenergy){
-  par(mfrow=c(1,3))
-  #try using plot instead of ggplot
-  acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
-  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=paste0("Energy",i),ylim=c(-1,1))
-  #autoplot(Renewable_Energy[,i+1])
-  print(ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,(i+1)])) +
-          geom_line(color="blue") +
-          ylab(paste0("Energy ",colnames(Renewable_Energy)[(1+i)],sep="")))
-}
 
-#I can't get the ggplot to be with the other two plots
+par(mfrow=c(1,3))
+for(i in 1:nenergy){
+  acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
+  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
+  plot(ts_Renewable_Energy[,i])+
+    title(main = paste(name[1+i]))
+}
 ```
 
 ### Q2
