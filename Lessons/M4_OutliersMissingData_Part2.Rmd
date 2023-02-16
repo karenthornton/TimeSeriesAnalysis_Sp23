@@ -106,7 +106,8 @@ Additional info on decompose()
 
 ```{r}
 #Ex1: Using R decompose function decompose the wind data in seasonal, trend and random
-decompose_wind_data=decompose(clean_wind_data,"additive")
+decompose_wind_data=decompose(clean_wind_data,"additive")#type="multiplicative")
+#stl instead of decompose (but this can only do additive), it gives a "remainder" category. smaller the bar the less pronounced it is
 plot(decompose_wind_data)
 
 #Ex2: Store the three component in separate vector
