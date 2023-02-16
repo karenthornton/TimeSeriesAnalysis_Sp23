@@ -1,7 +1,7 @@
 ---
 title: "ENV 790.30 - Time Series Analysis for Energy Data | Spring 2023"
 subtitle: "Assignment 4 - Due date 02/17/23"
-author: "Student Name"
+author: "Karen Thornton"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -22,7 +22,15 @@ R packages needed for this assignment: "xlsx" or "readxl", "ggplot2", "forecast"
 
 ```{r}
 #Load/install required package here
-
+#install.packages("xlsx")
+#library(xlsx)
+library(readxl)
+library(ggplot2)
+library(forecast)
+library(tseries)
+library(Kendall)
+library(lubridate)
+library(dplyr)
 
 ```
 
@@ -34,7 +42,14 @@ Consider the same data you used for A3 from the spreadsheet "Table_10.1_Renewabl
 ```{r}
 #Importing data set - using xlsx package
 
+Energy <- read_excel("/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx", skip = 9)
 
+Energy_df <- as.data.frame(Energy)
+
+Energy_df$Month <-ymd(Energy$Month)
+Energy_df <- Energy_df[-1,]
+
+Renewable_Energy <- select(Energy_df,Month, `Total Renewable Energy Production`)
 ```
 
 
@@ -50,6 +65,13 @@ Difference the "Total Renewable Energy Production" series using function diff().
 Try differencing at lag 1 only once, i.e., make `lag=1` and `differences=1`. Plot the differenced series Do the series still seem to have trend?
 
 ```{r}
+Renewable_Energy$`Total Renewable Energy Production` <- as.numeric(Renewable_Energy$`Total Renewable Energy Production`)
+
+diff_renew <- diff(Renewable_Energy[,2], lag = 1, differences = 1)
+diff_renew_df <- as.data.frame(diff_renew)
+#bind with the month (subtracting the first month of 1973)
+
+ggplot(diff_renew, aes(x=Month, y=`Total Renewable Energy Production`))
 
 ```
 
