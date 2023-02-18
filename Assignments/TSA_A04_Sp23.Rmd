@@ -69,9 +69,15 @@ Renewable_Energy$`Total Renewable Energy Production` <- as.numeric(Renewable_Ene
 
 diff_renew <- diff(Renewable_Energy[,2], lag = 1, differences = 1)
 diff_renew_df <- as.data.frame(diff_renew)
-#bind with the month (subtracting the first month of 1973)
+Renewable_Energy_minus_1 <- Renewable_Energy[-1,]
+diff_renew_df_final <- cbind(Renewable_Energy_minus_1$Month,diff_renew_df)
+colnames(diff_renew_df_final) <- c("Month","Diff_renew")
 
-ggplot(diff_renew, aes(x=Month, y=`Total Renewable Energy Production`))
+ggplot(diff_renew_df_final, aes(x=Month, y=Diff_renew))+
+  geom_line()+
+  geom_smooth(method = lm)
+
+#The differenced series doesn't seem to have a trend. 
 
 ```
 
@@ -82,6 +88,25 @@ Now let's compare the differenced series with the detrended series you calculate
 Copy and paste part of your code for A3 where you compute regression for Total Energy Production and the detrended Total Energy Production
 
 ```{r}
+nobs <- nrow(Renewable_Energy_minus_1)
+
+t <- c(1:nobs)
+
+linear_trend <- lm(Renewable_Energy_minus_1[,2]~t)
+
+summary(linear_trend)
+
+beta0_1 <- as.numeric(linear_trend$coefficients[1])
+beta1_1 <- as.numeric(linear_trend$coefficients[2])
+
+detrend_Renewable_Energy <- Renewable_Energy_minus_1[,2]-(beta0_1+beta1_1*t)
+detrend_Renewable_Energy_df <- as.data.frame(detrend_Renewable_Energy)
+detrend_Renewable_Energy_df_final <- cbind(Renewable_Energy_minus_1$Month,detrend_Renewable_Energy_df)
+colnames(detrend_Renewable_Energy_df_final) <- c("Month","Detrend_renew")
+
+ggplot(detrend_Renewable_Energy_df_final, aes(x=Month, y=Detrend_renew))+
+  geom_line()+
+  geom_smooth(method = lm)
 
 ```
 
@@ -90,7 +115,9 @@ Create a data frame with 4 columns: month, original series, detrended by Regress
 
 ```{r}
 #Data frame - remember to not include January 1973
+Final_df <- cbind(Renewable_Energy_minus_1$Month,Renewable_Energy_minus_1[,2], detrend_Renewable_Energy_df,diff_renew_df)
 
+colnames(Final_df) <- c("Month", "Original", "Detrended", "Differenced")
 
 ```
 
