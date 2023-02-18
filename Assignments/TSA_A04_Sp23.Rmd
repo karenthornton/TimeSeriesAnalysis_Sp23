@@ -127,6 +127,14 @@ Using ggplot() create a line plot that shows the three series together. Make sur
 ```{r}
 #Use ggplot
 
+colors = c("Original"= "blue", "Detrended" = "red", "Differenced" = "green")
+
+ggplot(Final_df, aes(x=Month))+
+  geom_line(aes(y=Original, color="Original"))+
+  geom_line(aes(y=Detrended, color="Detrended"))+
+  geom_line(aes(y=Differenced, color="Differenced"))+
+  labs(y="Units",color="Legend")
+
 ```
 
 
@@ -135,7 +143,14 @@ Plot the ACF for the three series and compare the plots. Add the argument `ylim=
 
 ```{r}
 #Compare ACFs
+ 
+  Acf(Renewable_Energy_minus_1[,2],lag.max = 40,main="Original",ylim=c(-0.5,1))
 
+  Acf(detrend_Renewable_Energy_df_final[,2],lag.max = 40, main="Detrended", ylim=c(-0.5,1))
+  
+  Acf(diff_renew_df_final[,2], lag.max = 40, main="Differenced", ylim=c(-0.5,1))
+  
+#The differenced series was the most efficient because the ACF number is lower for most of the lags (closer to being under the significance line). The detrended ACF has higher ACF values and there still seems to be a trend in the data. 
 ```
 
 
