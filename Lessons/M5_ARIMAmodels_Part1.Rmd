@@ -6,6 +6,14 @@ editor_options:
   chunk_output_type: console
 ---
 
+Notes:
+- if stochastic: use differencing
+- if determinist: use regression
+- AR processes have a relatively long memory 
+- the short memory family  of models is moving average (MA) (move around zero??)
+- MA has no "memory": can go from one extreme for the other with one jump (messy looking)
+
+
 ## Setting R code chunk options
 
 First R code chunk is used for setting the options for all R code chunks. The choice echo=TRUE means both code and output will appear on report, include = FALSE neither code nor output is printed.
