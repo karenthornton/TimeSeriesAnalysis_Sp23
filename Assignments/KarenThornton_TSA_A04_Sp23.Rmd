@@ -163,7 +163,8 @@ ts_Renewable_Energy <- ts(Renewable_Energy_minus_1[,2],
 print(SeasonalMannKendall(ts_Renewable_Energy))
 
 print(adf.test(ts_Renewable_Energy, alternative = "stationary"))
-#add the questions
+
+#The seasonal MannKendall shows that there is a seasonal trend in the data. This is apparent because the p-value is less than 0.05, meaning it's significant and you can reject the null hypothesis. The ADF p-value is not significant (its greater than 0.05) which means that there is not a unit root and the series is stationary. This doesn't match Q2 because in Q2 we detrended the series. This question shows that there's a seasonal trend in the original data (before getting detrended). 
 ```
 
 ### Q7
@@ -199,7 +200,7 @@ print(cor(energy_data_new_yearly, method = "spearman"))
 
 print(adf.test(ts_matrix, alternative = "stationary"))
 
-#
+#Yes, the results agree with Q6. The Mann Kendall test shows there's a trend and the correlation between year and the data is high (around 0.878) and the ADF isn't significant which shows that its stationary. 
 
 ```
 
