@@ -158,7 +158,12 @@ Plot the ACF for the three series and compare the plots. Add the argument `ylim=
 Compute the Seasonal Mann-Kendall and ADF Test for the original "Total Renewable Energy Production" series. Ask R to print the results. Interpret the results for both test. Whats the conclusion from the Seasonal Mann Kendall test? What's the conclusion for the ADF test? Do they match what you observed in Q2? Recall that having a unit root means the series has a stochastic trend. And when a series has stochastic trend we need to use a different procedure to remove the trend.
 
 ```{r}
+ts_Renewable_Energy <- ts(Renewable_Energy_minus_1[,2],
+                           frequency = 12, start = c(1973,2))
+print(SeasonalMannKendall(ts_Renewable_Energy))
 
+print(adf.test(ts_Renewable_Energy, alternative = "stationary"))
+#add the questions
 ```
 
 ### Q7
@@ -167,6 +172,18 @@ Aggregate the original "Total Renewable Energy Production" series by year. You c
 
 ```{r}
 
+energy_data_matrix <- matrix(ts_Renewable_Energy,byrow=FALSE,nrow=12)
+energy_data_yearly <- colMeans(energy_data_matrix)
+
+
+my_year <- c(year(first(Renewable_Energy_minus_1$Month)):year(last(Renewable_Energy_minus_1$Month)))
+
+energy_data_new_yearly <- data.frame(my_year, energy_data_yearly)
+
+ggplot(energy_data_new_yearly, aes(x=my_year, y=energy_data_yearly)) +
+            geom_line(color="blue") +
+            geom_smooth(color="red",method="lm") 
+
 ```
 
 ### Q8
@@ -174,6 +191,15 @@ Aggregate the original "Total Renewable Energy Production" series by year. You c
 Apply the Mann Kendal, Spearman correlation rank test and ADF. Are the results from the test in agreement with the test results for the non-aggregated series, i.e., results for Q6?
 
 ```{r}
+ts_matrix <- ts(energy_data_new_yearly[,2],
+                           frequency = 1, start = c(1973))
+print(MannKendall(ts_matrix))
+
+print(cor(energy_data_new_yearly, method = "spearman"))
+
+print(adf.test(ts_matrix, alternative = "stationary"))
+
+#
 
 ```
 
