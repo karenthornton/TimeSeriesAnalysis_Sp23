@@ -20,6 +20,10 @@ When you have completed the assignment, **Knit** the text and code into a single
 
 R packages needed for this assignment: "xlsx" or "readxl", "ggplot2", "forecast","tseries", and "Kendall". Install these packages, if you haven't done yet. Do not forget to load them before running your script, since they are NOT default packages.\\
 
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
+```
+
 ```{r}
 #Load/install required package here
 #install.packages("xlsx")
