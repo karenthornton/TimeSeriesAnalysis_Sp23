@@ -120,6 +120,7 @@ Create a data frame with 4 columns: month, original series, detrended by Regress
 ```{r}
 #Data frame - remember to not include January 1973
 Final_df <- cbind(Renewable_Energy_minus_1$Month,Renewable_Energy_minus_1[,2], detrend_Renewable_Energy_df,diff_renew_df)
+head(Final_df)
 
 colnames(Final_df) <- c("Month", "Original", "Detrended", "Differenced")
 
@@ -153,10 +154,9 @@ Plot the ACF for the three series and compare the plots. Add the argument `ylim=
   Acf(detrend_Renewable_Energy_df_final[,2],lag.max = 40, main="Detrended", ylim=c(-0.5,1))
   
   Acf(diff_renew_df_final[,2], lag.max = 40, main="Differenced", ylim=c(-0.5,1))
-  
-#The differenced series was the most efficient because the ACF number is lower for most of the lags (closer to being under the significance line). The detrended ACF has higher ACF values and there still seems to be a trend in the data. 
 ```
-
+#Answer:
+The differenced series was the most efficient because the ACF number is lower for most of the lags (closer to being under the significance line). The detrended ACF has higher ACF values and there still seems to be a trend in the data. 
 
 ### Q6
 Compute the Seasonal Mann-Kendall and ADF Test for the original "Total Renewable Energy Production" series. Ask R to print the results. Interpret the results for both test. Whats the conclusion from the Seasonal Mann Kendall test? What's the conclusion for the ADF test? Do they match what you observed in Q2? Recall that having a unit root means the series has a stochastic trend. And when a series has stochastic trend we need to use a different procedure to remove the trend.
@@ -167,9 +167,10 @@ ts_Renewable_Energy <- ts(Renewable_Energy_minus_1[,2],
 print(SeasonalMannKendall(ts_Renewable_Energy))
 
 print(adf.test(ts_Renewable_Energy, alternative = "stationary"))
-
-#The seasonal MannKendall shows that there is a seasonal trend in the data. This is apparent because the p-value is less than 0.05, meaning it's significant and you can reject the null hypothesis. The ADF p-value is not significant (its greater than 0.05) which means that there is not a unit root and the series is stationary. This doesn't match Q2 because in Q2 we detrended the series. This question shows that there's a seasonal trend in the original data (before getting detrended). 
 ```
+
+#Answer
+The seasonal MannKendall shows that there is a seasonal trend in the data. This is apparent because the p-value is less than 0.05, meaning it's significant and you can reject the null hypothesis. The ADF p-value is not significant (its greater than 0.05) which means that there is not a unit root and the series is stationary. This doesn't match Q2 because in Q2 we detrended the series. This question shows that there's a seasonal trend in the original data (before getting detrended).
 
 ### Q7
 
@@ -181,7 +182,8 @@ energy_data_matrix <- matrix(ts_Renewable_Energy,byrow=FALSE,nrow=12)
 energy_data_yearly <- colMeans(energy_data_matrix)
 
 
-my_year <- c(year(first(Renewable_Energy_minus_1$Month)):year(last(Renewable_Energy_minus_1$Month)))
+my_year <- 
+  c(year(first(Renewable_Energy_minus_1$Month)):year(last(Renewable_Energy_minus_1$Month)))
 
 energy_data_new_yearly <- data.frame(my_year, energy_data_yearly)
 
@@ -204,7 +206,6 @@ print(cor(energy_data_new_yearly, method = "spearman"))
 
 print(adf.test(ts_matrix, alternative = "stationary"))
 
-#Yes, the results agree with Q6. The Mann Kendall test shows there's a trend and the correlation between year and the data is high (around 0.878) and the ADF isn't significant which shows that its stationary. 
-
 ```
-
+#Answer:
+Yes, the results agree with Q6. The Mann Kendall test shows there's a trend and the correlation between year and the data is high (around 0.878) and the ADF isn't significant which shows that its stationary. 
