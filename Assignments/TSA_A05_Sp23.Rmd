@@ -61,7 +61,21 @@ nvar=ncol(energy_data)
 For this assignment you will work only with the following columns: Solar Energy Consumption and Wind Energy Consumption. Create a data frame structure with these two time series only and the Date column. Drop the rows with *Not Available* and convert the columns to numeric. You can use filtering to eliminate the initial rows or convert to numeric and then use the drop_na() function. If you are familiar with pipes for data wrangling, try using it!
 
 ```{r}
+#make a date
+energy_data$Month <-ymd(energy_data$Month)
 
+#make numeric
+energy_data$`Solar Energy Consumption` <- as.numeric(energy_data$`Solar Energy Consumption`)
+energy_data$`Wind Energy Consumption` <- as.numeric(energy_data$`Wind Energy Consumption`)
+
+#make a data fram
+energy_data <- as.data.frame(energy_data)
+
+#select the columns
+energy_data_select <- select(energy_data,Month,`Solar Energy Consumption`, `Wind Energy Consumption` )
+
+#drop NAs
+energy_data_clean <- drop_na(energy_data_select)
 
 ```
 
