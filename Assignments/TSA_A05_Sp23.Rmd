@@ -85,10 +85,10 @@ Plot the Solar and Wind energy consumption over time using ggplot. Plot each ser
 
 ```{r}
 #plot solar
-ggplot(energy_data_clean, aes(x="Month",y="Solar Energy Consumption"))+
-  geom_point()+
-  ylab("Solar Energy Consumption")+
-  scale_x_date(name= "Month", date_breaks = "5 years", date_labels = "%Y")
+ggplot(energy_data_clean)+
+  geom_line(aes(x="Month",y="Solar Energy Consumption"))+
+  ylab("Solar Energy Consumption")
+  #scale_x_date(date_breaks = "5 years", date_labels = "%Y")
 
 #plot wind
 
