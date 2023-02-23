@@ -84,6 +84,13 @@ energy_data_clean <- drop_na(energy_data_select)
 Plot the Solar and Wind energy consumption over time using ggplot. Plot each series on a separate graph. No need to add legend. Add informative names to the y axis using `ylab()`. Explore the function scale_x\_date() on ggplot and see if you can change the x axis to improve your plot. Hint: use *scale_x\_date(date_breaks = "5 years", date_labels = "%Y")")*
 
 ```{r}
+#plot solar
+ggplot(energy_data_select, aes(x="Month",y="Solar Energy Consumption"))+
+  geom_point()+
+  ylab("Solar Energy Consumption")+
+  scale_x_date(name= "Month", date_breaks = "5 years", date_labels = "%Y")
+
+#plot wind
 
 ```
 
