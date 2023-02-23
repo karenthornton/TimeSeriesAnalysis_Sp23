@@ -48,7 +48,7 @@ For this module we will work with monthly average for electricity retail price i
 ```{r}
 
 #Importing time series data from text file#
-electricity_price <- read.csv(file="./Data/Average_retail_price_of_electricity_United_States_monthly.csv",header=TRUE,skip=4)
+electricity_price <- read.csv(file="/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Average_retail_price_of_electricity_United_States_monthly.csv",header=TRUE,skip=4)
 
 #Inspect data
 head(electricity_price)
@@ -220,6 +220,8 @@ Some important arguments for Arima() are:
 #Remember the order d=1 will perform the differencing, 
 #so lets try ARIMA(1,1,1) on the non-seasonal residential data before differencing
 Model_111 <- Arima(deseasonal_residential_price,order=c(1,1,1),include.drift=TRUE)
+#drift = being more generous with ARIMA model
+#drift always going to be near zero
 print(Model_111)
 compare_aic <- data.frame(Model_111$aic)
 
