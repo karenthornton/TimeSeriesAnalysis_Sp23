@@ -171,6 +171,6 @@ plot(filter_solar_decompose)
 ```
 
 > Answer:
-
+solar and multiplicative??? not additive?
 
 
