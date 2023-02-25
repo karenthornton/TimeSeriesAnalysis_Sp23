@@ -20,6 +20,10 @@ When you have completed the assignment, **Knit** the text and code into a single
 
 R packages needed for this assignment: "xlsx" or "readxl", "ggplot2", "forecast","tseries", and "Kendall". Install these packages, if you haven't done yet. Do not forget to load them before running your script, since they are NOT default packages.\\
 
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
+```
+
 ```{r}
 #Load/install required package here
 #library(xlsx)
@@ -42,11 +46,10 @@ Consider the same data you used for A04 from the spreadsheet "Table_10.1_Renewab
 library(readxl)
 
 energy_data <- read_excel("/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx", skip = 12, sheet = 1,col_names = FALSE)
-#energy_data <- read_excel(file="./Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx",header=FALSE,startRow = 13,sheetIndex=1) #startRow is equivalent to skip on read.table
+
 
 #Now let's extract the column names from row 11 only
 read_col_names <- read_excel("/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx",skip = 10, n_max = 1, sheet = 1, col_names = FALSE)
-#read_col_names <- read_excel(file="./Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx",header=FALSE,startRow = 11,endRow=11,sheetIndex=1)
 
 colnames(energy_data) <- read_col_names
 head(energy_data)
