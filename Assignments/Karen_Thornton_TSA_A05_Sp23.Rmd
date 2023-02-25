@@ -68,7 +68,7 @@ energy_data$Month <-ymd(energy_data$Month)
 energy_data$`Solar Energy Consumption` <- as.numeric(energy_data$`Solar Energy Consumption`)
 energy_data$`Wind Energy Consumption` <- as.numeric(energy_data$`Wind Energy Consumption`)
 
-#make a data fram
+#make a data frame
 energy_data <- as.data.frame(energy_data)
 
 #select the columns
@@ -84,7 +84,7 @@ colnames(energy_data_clean) <- c("Month", "Solar", "Wind")
 
 ### Q2
 
-Plot the Solar and Wind energy consumption over time using ggplot. Plot each series on a separate graph. No need to add legend. Add informative names to the y axis using `ylab()`. Explore the function scale_x\_date() on ggplot and see if you can change the x axis to improve your plot. Hint: use *scale_x\_date(date_breaks = "5 years", date_labels = "%Y")")*
+Plot the Solar and Wind energy consumption over time using ggplot. Plot each series on a separate graph. No need to add legend. Add informative names to the y axis using `ylab()`. Explore the function scale_x_date() on ggplot and see if you can change the x axis to improve your plot. Hint: use *scale_x_date(date_breaks = "5 years", date_labels = "%Y")")*
 
 ```{r}
 #plot solar
@@ -102,7 +102,7 @@ ggplot(energy_data_clean)+
 
 ### Q3
 
-Now plot both series in the same graph, also using ggplot(). Look at lines 141-148 of the file `M4_OutliersMissingData_Part2_Complete.Rmd` to learn how to manually add a legend to ggplot. Make the solar energy consumption red and wind energy consumption blue. Add informative name to the y axis using `ylab("Energy Consumption)`. And use function scale_x\_date() again to improve x axis.
+Now plot both series in the same graph, also using ggplot(). Look at lines 141-148 of the file `M4_OutliersMissingData_Part2_Complete.Rmd` to learn how to manually add a legend to ggplot. Make the solar energy consumption red and wind energy consumption blue. Add informative name to the y axis using `ylab("Energy Consumption)`. And use function scale_x_date() again to improve x axis.
 
 ```{r}
 
@@ -132,8 +132,10 @@ plot(wind_decompose)
 solar_decompose <- decompose(ts_solar, type = "additive")
 plot(solar_decompose)
 
-#answer questions
 ```
+
+#Answer:
+Based on the decomposition graphs, both the wind and the solar seem to still have trends. Both the wind and solar seem to have seasonality affecting the random category in the decomposition graphs (aka the random component doesn't look random). 
 
 ### Q4
 
