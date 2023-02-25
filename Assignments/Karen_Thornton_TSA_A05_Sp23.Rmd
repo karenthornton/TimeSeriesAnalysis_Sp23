@@ -147,14 +147,16 @@ plot(wind_decompose_m)
 solar_decompose_m <- decompose(ts_solar, type = "multiplicative")
 plot(solar_decompose_m)
 
-#answer questions
 ```
+#Answer:
+When switching to multiplicative, the random component still seems to have seasonality for both the wind and the solar. The seasonality is less uniform at early time periods now and it was less uniform in later time periods with the additive. 
 
 ### Q5
 
 When fitting a model to this data, do you think you need all the historical data? Think about the data from 90s and early 20s. Are there any information from those years we might need to forecast the next six months of Solar and/or Wind consumption. Explain your response.
 
 > Answer:
+No, I don't think you need all the historical data. If you wanted to see what the next 10 years would look like you shouldn't include data from the 1920s for example. If you look at precipitation data and base your predictions for the future on the amount of rain an area accumulated in 1923 then your predictions will be wrong. If you look at the rain in an area in 2011, your data will be more accurate (not counting outlier years). Basically climate change is making it so you should use more current data and not take an average from data that dates back so far it's not relevant. Anothter reason could be that solar and wind weren't very relevant in the 90s and early 20s, so the numbers will be much lower and thus may make it harder to fit the model. 
 
 ### Q6
 
@@ -173,6 +175,5 @@ plot(filter_solar_decompose)
 ```
 
 > Answer:
-solar and multiplicative??? not additive?
-
+After looking at the decomposition graphs, it seams like the random component for the wind looks random, but the random component for the solar still seems seasonal. This is because multiplicative decomposition should've been used for solar. Multiplicative decompositions should be used when the seasonal fluctuations are proportionally increasing or decreasing with the series level. 
 
