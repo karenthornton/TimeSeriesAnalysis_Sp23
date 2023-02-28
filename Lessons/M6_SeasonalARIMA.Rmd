@@ -47,7 +47,7 @@ For this module we will work with monthly average for electricity retail price i
 ```{r}
 
 #Importing time series data from text file#
-electricity_price <- read.csv(file="./Data/Average_retail_price_of_electricity_United_States_monthly.csv",header=TRUE,skip=4)
+electricity_price <- read.csv(file="/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Average_retail_price_of_electricity_United_States_monthly.csv",header=TRUE,skip=4)
 
 #Inspect data
 head(electricity_price)
@@ -167,8 +167,10 @@ cat("Number of seasonal differencing needed: ",ns_diff)
 
 #Lets difference the series once at lag 12 to remove the seasonal trend.
 residential_price_seas_diff <- diff(ts_electricity_price[,"Residential"],lag=12, differences=1)
+#lag is 12 because its seasonal
 residential_price_trend_diff <- diff(ts_electricity_price[,"Residential"],lag =1, differences=1) #diff done on orig series
 residential_price_both_diff <- diff(residential_price_trend_diff,lag =12, differences=1)
+#this is the one that's been diferenced twice
 
 #Check autocorrelation plots for differenced series
 #Comparing ACFs
