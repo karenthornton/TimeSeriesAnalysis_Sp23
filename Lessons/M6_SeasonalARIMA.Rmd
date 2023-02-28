@@ -14,6 +14,17 @@ First R code chunk is used for setting the options for all R code chunks. The ch
 knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
 ```
 
+Notes:
+if middle are both 1 then you differentiate twice. this means there won't be any mu.
+
+Steps to specify model orders
+1. run staionary test
+2.
+3. plot ACF and PACF and look at the behavior of non-seasonal lags
+4. check if seasonal differencing is needed
+5. again ACF and PACF plots....
+
+
 ## Loading packages and initializing
 
 Second R code chunk is for loading packages. By setting message = FALSE, the code will appear but not the output. 
