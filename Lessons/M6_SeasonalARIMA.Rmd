@@ -170,7 +170,7 @@ residential_price_seas_diff <- diff(ts_electricity_price[,"Residential"],lag=12,
 #lag is 12 because its seasonal
 residential_price_trend_diff <- diff(ts_electricity_price[,"Residential"],lag =1, differences=1) #diff done on orig series
 residential_price_both_diff <- diff(residential_price_trend_diff,lag =12, differences=1)
-#this is the one that's been diferenced twice
+#this is the one that's been diferenced twice (which means no drift)
 
 #Check autocorrelation plots for differenced series
 #Comparing ACFs
