@@ -105,10 +105,11 @@ ggplot(Renewable_Energy, aes(x=Month))+
     geom_smooth(aes(y=hydro_mean, col= 
                       "Hydroelectric.Power.Consumption"))+
   xlab("Time")+
-  ylab("Production/Consumption")+
+  ylab("Production/Consumption (Trillion BTU)")+
   labs(title = "Renewable Energy",color="Energy Type")
-```
 
+```
+interpretation: The hydroelectric power consumption looks like the most stable time series. It looks like it centers around a number a little under 250. Total Biomass Energy Production seems to be increasing over time, but not as drastically as the Total Renewable Energy time series. Both biomass and total renewable energy seems to increase more drastically starting around the early 2000s. 
 
 ## Question 5
 Compute the correlation between these three series. Are they significantly correlated? Explain your answer.
@@ -120,7 +121,7 @@ cor.test(ts_Rewnewable_Energy[,2],ts_Rewnewable_Energy[,3])
 
 ```
 #Answer:
-Yes, they are all significantly correlated. The p-value of the correlation test are all below 0.05 which means you can reject the null hypothesis. The correlation between the renewable energy and the hydro is the least correlated of the correlations (with a p-value of 0.01492), but it is still significant. 
+Yes, they are all significantly correlated. The p-value of the correlation test are all below 0.05 which means you can reject the null hypothesis. The correlation between the renewable energy and the hydro is the least correlated of the correlations (with a p-value of 0.01492), but it is still significant. This shows that there are similar factors affecting all three time series. They aren't necessarily affecting each other but maybe people are demanding more renewable energy and this demand is making them all act similarly. 
 
 ## Question 6
 Compute the autocorrelation function from lag 1 up to lag 40 for these three variables. What can you say about these plots? Do the three of them have the same behavior?

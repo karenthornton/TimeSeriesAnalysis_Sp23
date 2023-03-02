@@ -239,6 +239,8 @@ Pacf(SARIMA_autofit$residuals,lag.max=40)
 Recall from M6 that the best fit for the non-seasonal time series is a ARIMA(2,1,2) with drift.
 
 ```{r}
+#assuming seasonal is constant over time
+#no seasonality incorporated here
 
 ARIMA_autofit <- auto.arima(deseasonal_residential_price,max.D=0,max.P = 0,max.Q=0)
 print(ARIMA_autofit)
@@ -253,3 +255,4 @@ Pacf(ARIMA_autofit$residuals,lag.max=40)
 
 ## Discussion: Which one to do? ARIMA or SARIMA?
 
+Not really comparable. We took out the seasonal?? need to add the seasonal back to the last Arima and then compare to the rest of the. 

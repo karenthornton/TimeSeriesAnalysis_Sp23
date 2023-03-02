@@ -96,8 +96,6 @@ summary(linear_trend_1)
 summary(linear_trend_2)
 summary(linear_trend_3)
 
-#interpret the regression output: The intercept is the first coefficient and the slope is the second coefficient
-
 beta0_1 <- as.numeric(linear_trend_1$coefficients[1])
 beta1_1 <- as.numeric(linear_trend_1$coefficients[2])
 beta0_2 <- as.numeric(linear_trend_2$coefficients[1])
@@ -105,6 +103,8 @@ beta1_2 <- as.numeric(linear_trend_2$coefficients[2])
 beta0_3 <- as.numeric(linear_trend_3$coefficients[1])
 beta1_3 <- as.numeric(linear_trend_3$coefficients[2])
 ```
+
+interpretation: Total Biomass has a very small slope and intercept. Total renewable energy has a small, but larger than the biomass, slope and a very large intercept. Hydroelectric power is the only one with a negative slope. It has a large intercept but not as large as the total renewable energy. Any time series with a decreasing slope means that overtime the values are decreasing. Biomass isn't as popular as the other two so the intercept is lower. 
 
 ```{r}
 #plot for visual aid
@@ -151,6 +151,17 @@ The detrended lines look different than the original, especially for biomass and
 Plot ACF and PACF for the detrended series and compare with the plots from Q1. Did the plots change? How?
 
 ```{r}
+
+#Question 1 ACFs and PACFs
+par(mfrow=c(1,3))
+for(i in 1:nenergy){
+  acf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
+  pacf(ts_Renewable_Energy[,i],lag.max = 40,main=name[i+1],ylim=c(-1,1))
+  plot(ts_Renewable_Energy[,i])+
+    title(main = paste(name[1+i]))}
+  
+#Question 5 ACFs and PACFs
+
   par(mfrow=c(1,2))
   acf(detrend_Renewable_Energy_1,lag.max = 40,main=name[2],ylim=c(-1,1))
   pacf(detrend_Renewable_Energy_1,lag.max = 40,
@@ -168,7 +179,7 @@ Plot ACF and PACF for the detrended series and compare with the plots from Q1. D
 ```
 
 #Answer:
-It doesn't look like the plots have changed too much. The only thing I notice is the Hydroelectric ACF looks even more seasonal than before. 
+In all three series the ACF looks more seasonal in the detrended series than the original series. Taking the trends out showed that there was a "hidden" seasonal aspect to the series. 
 
 ## Seasonal Component
 
@@ -178,56 +189,118 @@ Set aside the detrended series and consider the original series again from Q1 to
 Do the series seem to have a seasonal trend? Which serie/series? Use function *lm()* to fit a seasonal means model (i.e. using the seasonal dummies) to this/these time series. Ask R to print the summary of the regression. Interpret the regression output. Save the regression coefficients for further analysis.
 
 ```{r}
-#The Hydroelectric seems to have a seasonal trend
+#The Hydroelectric seems to have the strongest seasonal trend
+#All seem to have at least a little seasonality
 
 #First create the seasonal dummies
-dummies <- seasonaldummy(ts_Renewable_Energy[,3])  
+dummies_1 <- seasonaldummy(ts_Renewable_Energy[,1])
+dummies_2 <- seasonaldummy(ts_Renewable_Energy[,2])
+dummies_3 <- seasonaldummy(ts_Renewable_Energy[,3])  
 
 #Then fit a linear model to the seasonal dummies
-seas_means_model=lm(Renewable_Energy[,(4)]~dummies)
-summary(seas_means_model)
+seas_means_1=lm(Renewable_Energy[,(2)]~dummies_1)
+summary(seas_means_1)
+
+seas_means_2=lm(Renewable_Energy[,(3)]~dummies_2)
+summary(seas_means_2)
+
+seas_means_3=lm(Renewable_Energy[,(4)]~dummies_3)
+summary(seas_means_3)
 
 #Store regression coefficients
-beta_int=seas_means_model$coefficients[1]
-beta_coeff=seas_means_model$coefficients[2:12]
+beta_int_1=seas_means_1$coefficients[1]
+beta_coeff_1=seas_means_1$coefficients[2:12]
+
+beta_int_2=seas_means_2$coefficients[1]
+beta_coeff_2=seas_means_2$coefficients[2:12]
+
+beta_int_3=seas_means_3$coefficients[1]
+beta_coeff_3=seas_means_3$coefficients[2:12]
 
 #compute seasonal component
-Energy_seas_comp=array(0,nobs)
+Energy_seas_comp_1=array(0,nobs)
 for(i in 1:nobs){
-  Energy_seas_comp[i]=(beta_int+beta_coeff%*%dummies[i,])
+  Energy_seas_comp_1[i]=(beta_int_1+beta_coeff_1%*%dummies_1[i,])
+}
+
+Energy_seas_comp_2=array(0,nobs)
+for(i in 1:nobs){
+  Energy_seas_comp_2[i]=(beta_int_2+beta_coeff_2%*%dummies_2[i,])
+}
+
+Energy_seas_comp_3=array(0,nobs)
+for(i in 1:nobs){
+  Energy_seas_comp_3[i]=(beta_int_3+beta_coeff_3%*%dummies_3[i,])
 }
 ```
 
+Interpretation: 
+The intercept for biomass is 288.020, total renewable energy is 601.022, and 237.225 for hydroelectric. The hydroelectric has the smallest error which means that it had the most seasonality to begin with. 
+
 ```{r}
 #plot
+ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,2])) +
+            geom_line(color="blue") +
+            ylab(paste0(colnames(Renewable_Energy)[(2)],sep="")) +
+            geom_line(aes(y=Energy_seas_comp_1), col="red")
+
+ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,3])) +
+            geom_line(color="blue") +
+            ylab(paste0(colnames(Renewable_Energy)[(3)],sep="")) +
+            geom_line(aes(y=Energy_seas_comp_2), col="red")
+
 ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,4])) +
             geom_line(color="blue") +
             ylab(paste0(colnames(Renewable_Energy)[(4)],sep="")) +
-            geom_line(aes(y=Energy_seas_comp), col="red")
+            geom_line(aes(y=Energy_seas_comp_3), col="red")
 ```
 ### Q7
 Use the regression coefficients from Q6 to deseason the series. Plot the deseason series and compare with the plots from part Q1. Did anything change?
 
 ```{r}
 #Removing seasonal component
-deseason_Renewable_Energy <- Renewable_Energy[,4]-Energy_seas_comp
+deseason_Renewable_Energy_1 <- Renewable_Energy[,2]-Energy_seas_comp_1
+deseason_Renewable_Energy_2 <- Renewable_Energy[,3]-Energy_seas_comp_2
+deseason_Renewable_Energy_3 <- Renewable_Energy[,4]-Energy_seas_comp_3
 
 #plot
+ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,2])) +
+            geom_line(color="blue") +
+            ylab(paste0(colnames(Renewable_Energy)[2],sep="")) +
+            geom_line(aes(y=deseason_Renewable_Energy_1), col="green")
+
+ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,3])) +
+            geom_line(color="blue") +
+            ylab(paste0(colnames(Renewable_Energy)[3],sep="")) +
+            geom_line(aes(y=deseason_Renewable_Energy_2), col="green")
+
 ggplot(Renewable_Energy, aes(x=Month, y=Renewable_Energy[,4])) +
             geom_line(color="blue") +
             ylab(paste0(colnames(Renewable_Energy)[4],sep="")) +
-            geom_line(aes(y=deseason_Renewable_Energy), col="green")
+            geom_line(aes(y=deseason_Renewable_Energy_3), col="green")
 ```
+
+Interpretation: The deseasoned graphs (green) are all centered around zero. The biomass and total renewable graphs don't look that different because they didn't have the same amount of seasonality as the hydroelectric. The hydroelectric graph has less drastic ups and downs. 
 
 ### Q8
 Plot ACF and PACF for the deseason series and compare with the plots from Q1. Did the plots change? How?
 
 ```{r}
   par(mfrow=c(1,2))
-  acf(deseason_Renewable_Energy,lag.max = 40,main=name[4],ylim=c(-1,1))
-  pacf(deseason_Renewable_Energy,lag.max = 40,
+  acf(deseason_Renewable_Energy_1,lag.max = 40,main=name[2],ylim=c(-1,1))
+  pacf(deseason_Renewable_Energy_1,lag.max = 40,
+       main=paste0("Biomass"),ylim=c(-1,1))
+  
+    par(mfrow=c(1,2))
+  acf(deseason_Renewable_Energy_2,lag.max = 40,main=name[3],ylim=c(-1,1))
+  pacf(deseason_Renewable_Energy_2,lag.max = 40,
+       main=paste0("Total_Renewable"),ylim=c(-1,1))
+  
+  par(mfrow=c(1,2))
+  acf(deseason_Renewable_Energy_3,lag.max = 40,main=name[4],ylim=c(-1,1))
+  pacf(deseason_Renewable_Energy_3,lag.max = 40,
        main=paste0("Hydroelectric"),ylim=c(-1,1))
 ```
 
 #Answer:
-Yes, the plots from Q8 are different than Q1. Since taking the seasonal trend out, the hydroelectric power consumption ACF doesn't look seasonal (no ups and downs). 
+Yes, the plots from Q8 are different than Q1. Since taking the seasonal trend out, none of the ACFs have a sesonal trend (no ups and downs). This is because we subtracted the seasonality from the original series. 
