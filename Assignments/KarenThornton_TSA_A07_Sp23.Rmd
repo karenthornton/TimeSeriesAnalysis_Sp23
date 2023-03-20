@@ -136,6 +136,12 @@ print(Model_111)
 
 Now plot the residuals of the ARIMA fit from Q5 along with residuals ACF and PACF on the same window. You may use the $checkresiduals()$ function to automatically generate the three plots. Do the residual series look like a white noise series? Why?
 
+```{r}
+checkresiduals(Model_111)
+```
+
+#Yes, the series looks like white noise. White noise means the series is random and you can't predict it. Looking at the residual graph you can see that the points are random and there's no way to predict it. You can also see that the ACF values are all close to zero. This means that the points aren't correlated to each other (other than the random coorelation). 
+
 ## Modeling the original series (with seasonality)
 
 ### Q7
@@ -143,9 +149,31 @@ Now plot the residuals of the ARIMA fit from Q5 along with residuals ACF and PAC
 Repeat Q4-Q6 for the original series (the complete series that has the seasonal component). Note that when you model the seasonal series, you need to specify the seasonal part of the ARIMA model as well, i.e., $P$, $D$ and $Q$.
 
 ```{r}
+print(adf.test(ng_ts))
 
+n_diff_2 <- ndiffs(ng_ts)
+
+ng_diff_2 <- diff(ng_ts, differences = 1)
+
+#ACF
+Acf(ng_diff_2,lag.max = 40,main="Original Natural Gas ACF",ylim=c(-1,1))
+
+#PACF
+Pacf(ng_diff_2,lag.max = 40,main="Original Natural Gas PACF",ylim=c(-1,1))
+```
+#The d for this is 1 because the acf shows you need at least one difference since there isn't a unit root. The ndiff function shows how many times you have to difference it. Looking at the ACF you can see that q is equal to 1 because that's the first significant lag after lag 0. Looking at the PACF you can see that p is equal to 1 as well because lag 1 is the first significant lag after lag zero. 
+
+#get the seasonal components
+
+
+```{r}
+Model_seasonal <- Arima(ng_diff,order=c(1,1,1),include.drift=TRUE)
+print(Model_seasonal)
 ```
 
+```{r}
+checkresiduals(Model_seasonal)
+```
 
 ### Q8
 
@@ -165,7 +193,7 @@ Compare the residual series for Q7 and Q6. Can you tell which ARIMA model is bet
 Use the $auto.arima()$ command on the **deseasonalized series** to let R choose the model parameter for you. What's the order of the best ARIMA model? Does it match what you specified in Q4?
 
 ```{r}
-
+auto.arima(ng_deaseasonal_decompose)
 ```
 
 
@@ -174,6 +202,6 @@ Use the $auto.arima()$ command on the **deseasonalized series** to let R choose 
 Use the $auto.arima()$ command on the **original series** to let R choose the model parameters for you. Does it match what you specified in Q7?
 
 ```{r}
-
+auto.arima(ng_ts)
 ```
 
