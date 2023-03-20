@@ -45,6 +45,7 @@ knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE)
 ```
 
 ```{r}
+#import data
 ng_raw <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Net_generation_United_States_all_sectors_monthly.csv", skip=4)
 
 ng_raw$Month <- mdy(ng_raw$Month)
@@ -52,7 +53,7 @@ ng_raw$Month <- mdy(ng_raw$Month)
 ng_selected <- select(ng_raw, Month, natural.gas.thousand.megawatthours)
 
 colnames(ng_selected) <- c("Month", "Natural_Gas")
-
+#create timeseries 
 ng_ts <- ts(ng_selected$Natural_Gas, frequency = 12, start = 1)
 ```
 
@@ -91,6 +92,7 @@ Acf(ng_deaseasonal_decompose,lag.max = 40,main="Deseasonal Natural Gas ACF",ylim
 #PACF
 Pacf(ng_deaseasonal_decompose,lag.max = 40,main="Deseasonal Natural Gas PACF",ylim=c(-1,1))
 ```
+#The plots here show less seasonality than the ones in question 1. The initial graph shows an increasing trend, but doesn't have the same ups and downs as the initial plot in quesiton 1. The ACF and PACF here show no seasonality, which is different than the seasonality that is shown in the ACF and PACF for quesiton 1. 
 
 ## Modeling the seasonally adjusted or deseasonalized series
 
@@ -121,7 +123,7 @@ Acf(ng_diff,lag.max = 40,main="Differenced Natural Gas ACF",ylim=c(-1,1))
 Pacf(ng_diff,lag.max = 40,main="Differenced Natural Gas PACF",ylim=c(-1,1))
 
 ```
-#Based on the de-seasonal time series there's a slow decay in the ACF. This means that it's most likely an AR model. It is harder to tell what it is when it is differenced. The d is equal to 1 because you have to difference it once. You know you have to difference it at least once because there isn't any unit root. The p value is 1 because looking at the PACF there's only one significant lag zero. The q value is 1 because looking at the ACF there's only one significant lag after lag zero. 
+#Answer: (1,1,1) Based on the de-seasonal time series there's a slow decay in the ACF. This means that it's most likely an AR model. It is harder to tell what it is when it is differenced. The d is equal to 1 because you have to difference it once. You know you have to difference it at least once because there isn't any unit root. The p value is 1 because looking at the PACF there's only one significant lag after lag zero. The q value is 1 because looking at the ACF there's only one significant lag after lag zero. 
 
 ### Q5
 
@@ -161,27 +163,28 @@ Acf(ng_diff_2,lag.max = 40,main="Original Natural Gas ACF",ylim=c(-1,1))
 #PACF
 Pacf(ng_diff_2,lag.max = 40,main="Original Natural Gas PACF",ylim=c(-1,1))
 ```
-#The d for this is 1 because the acf shows you need at least one difference since there isn't a unit root. The ndiff function shows how many times you have to difference it. Looking at the ACF you can see that q is equal to 1 because that's the first significant lag after lag 0. Looking at the PACF you can see that p is equal to 1 as well because lag 1 is the first significant lag after lag zero. 
-
-#get the seasonal components
-
+#Answer: (1,1,1)(2,1,2)[12] The d for this is 1 because the adf test shows you need at least one difference since there isn't a unit root. The ndiff function shows how many times you have to difference it.This is the same as question 4 because that part is looking at the non-seasonal part. The D for this is 1 because the adf test for the non-seasonal series also has a significant p-value, meaning there isn't a root unit and it needs to be differenced at least once. the ndiff function shows only 1 is needed.  Looking at the ACF you can see that q is equal to 1 because that's the first significant lag after lag 0. Looking at the PACF you can see that p is equal to 1 as well because lag 1 is the first significant lag after lag zero. You can tell that Q is 2 because looking at the ACF, there are two siginificant lags after the first seasonal spike (around lag 11). P is also 2 becuase if you look at the PACF there are two significant negative spikes after the first lag. 
 
 ```{r}
-Model_seasonal <- Arima(ng_diff,order=c(1,1,1),include.drift=TRUE)
+Model_seasonal <- Arima(ng_diff,order=c(1,1,1), seasonal = c(2,1,2),include.drift=TRUE)
 print(Model_seasonal)
 ```
 
 ```{r}
 checkresiduals(Model_seasonal)
 ```
+#The residuals here look slightly less like white noise. If you look at the ACF there are some ups and downs even though the coorelations are close to 0. This is because the seasonality is affecting the coorelation and thus is not a white noise.
+
 
 ### Q8
 
 Compare the residual series for Q7 and Q6. Can you tell which ARIMA model is better representing the Natural Gas Series? Is that a fair comparison? Explain your response.
 
 ```{r}
-
+checkresiduals(Model_111)
+checkresiduals(Model_seasonal)
 ```
+#The deseasonaed ARIMA model is better representing the Natural Gas Series because it is closer to white noise. This means that the model that we fit is actually working. The ACF for the residuals with the seasonality still in there is making the series not equal to white noise. This is a fair comparision because you need to take the seasonality (if there is one) out of a series in order to see the true coorelation. Taking the seasonality out of the time series make the model fit better and thus looks closer to white noise.
 
 
 ## Checking your model with the auto.arima()
@@ -195,7 +198,7 @@ Use the $auto.arima()$ command on the **deseasonalized series** to let R choose 
 ```{r}
 auto.arima(ng_deaseasonal_decompose)
 ```
-
+#This does not match what I got. In this, p is 3, d is 1, and q is 0. This means that I got d correct, but not p or q. 
 
 ### Q10
 
@@ -204,4 +207,4 @@ Use the $auto.arima()$ command on the **original series** to let R choose the mo
 ```{r}
 auto.arima(ng_ts)
 ```
-
+#I got the seasonal part correct (2,1,2) but not the non-seasonal part. For this I got (1,1,1) and it should be (2,0,1). I'm not sure why d is 0 since the adf test was significant. s is 12 because it's monthly data.
