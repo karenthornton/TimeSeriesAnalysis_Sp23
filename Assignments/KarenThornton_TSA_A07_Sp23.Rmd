@@ -142,7 +142,7 @@ Now plot the residuals of the ARIMA fit from Q5 along with residuals ACF and PAC
 checkresiduals(Model_111)
 ```
 
-#Yes, the series looks like white noise. White noise means the series is random and you can't predict it. Looking at the residual graph you can see that the points are random and there's no way to predict it. You can also see that the ACF values are all close to zero. This means that the points aren't correlated to each other (other than the random coorelation). 
+#This is almost a white noise, the series looks like white noise but the ACF shows a little coorelation. White noise means the series is random and you can't predict it. Looking at the residual graph you can see that the points are random and there's no way to predict it. You can see that the ACF values are all close to zero. This shows that its almost a white noise, but there's a little coorelation still shown in the ACF, looking at the amount of significant lags.
 
 ## Modeling the original series (with seasonality)
 
@@ -184,7 +184,7 @@ Compare the residual series for Q7 and Q6. Can you tell which ARIMA model is bet
 checkresiduals(Model_111)
 checkresiduals(Model_seasonal)
 ```
-#The deseasonaed ARIMA model is better representing the Natural Gas Series because it is closer to white noise. This means that the model that we fit is actually working. The ACF for the residuals with the seasonality still in there is making the series not equal to white noise. This is a fair comparision because you need to take the seasonality (if there is one) out of a series in order to see the true coorelation. Taking the seasonality out of the time series make the model fit better and thus looks closer to white noise.
+#Its hard to tell which series is better representing. Based on the white noise it looks like the Arima with the seasonal component is better representing. This is because looking at the ACFs that one has less significant lags and the deseasoned series. This is a fair comparison because the original time series has a seasonal component, which means the Arima model that fits best would also have a seasonal component. Both ACFs are close to zero, meaning there isn't a ton of coorelation, but neither one is a perfect white noise. 
 
 
 ## Checking your model with the auto.arima()
