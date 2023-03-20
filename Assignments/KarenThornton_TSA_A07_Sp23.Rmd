@@ -173,7 +173,7 @@ print(Model_seasonal)
 ```{r}
 checkresiduals(Model_seasonal)
 ```
-#The residuals here look slightly less like white noise. If you look at the ACF there are some ups and downs even though the coorelations are close to 0. This is because the seasonality is affecting the coorelation and thus is not a white noise.
+#The residuals here also don't look exactly like white noise. If you look at the ACF there are some ups and downs even though the coorelations are close to 0. This is because the seasonality is affecting the coorelation and thus is not a white noise.
 
 
 ### Q8
