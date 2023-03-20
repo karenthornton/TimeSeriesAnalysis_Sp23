@@ -4,6 +4,8 @@ subtitle: "Assignment 7 - Due date 03/20/23"
 author: "Student Name"
 output: pdf_document
 geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Directions
@@ -20,7 +22,11 @@ When you have completed the assignment, **Knit** the text and code into a single
 
 ```{r}
 #Load/install required package here
-
+library(forecast)
+library(tseries)
+library(lubridate)
+library(ggplot2)
+library(tidyverse)
 ```
 
 ## Importing and processing the data set
@@ -33,8 +39,32 @@ Packages needed for this assignment: "forecast","tseries". Do not forget to load
 
 Import the csv file and create a time series object for natural gas. Make you sure you specify the **start=** and **frequency=** arguments. Plot the time series over time, ACF and PACF.
 
-```{r}
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
+```
 
+```{r}
+ng_raw <- read.csv("/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Net_generation_United_States_all_sectors_monthly.csv", skip=4)
+
+ng_raw$Month <- mdy(ng_raw$Month)
+
+ng_selected <- select(ng_raw, Month, natural.gas.thousand.megawatthours)
+
+colnames(ng_selected) <- c("Month", "Natural_Gas")
+
+ng_ts <- ts(ng_selected$Natural_Gas, frequency = 12, start = 1)
+```
+
+```{r}
+#plot
+ggplot(ng_selected)+
+  geom_line(aes(x=Month, y=Natural_Gas))
+
+#ACF
+Acf(ng_ts,lag.max = 40,main="Natural Gas ACF",ylim=c(-1,1))
+
+#PACF
+Pacf(ng_ts,lag.max = 40,main="Natural Gas PACF",ylim=c(-1,1))
 ```
 
 ### Q2
