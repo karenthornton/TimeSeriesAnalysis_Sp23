@@ -27,6 +27,7 @@ library(tseries)
 library(lubridate)
 library(ggplot2)
 library(tidyverse)
+library(Kendall)
 ```
 
 ## Importing and processing the data set
@@ -72,7 +73,23 @@ Pacf(ng_ts,lag.max = 40,main="Natural Gas PACF",ylim=c(-1,1))
 Using the $decompose()$ or $stl()$ and the $seasadj()$ functions create a series without the seasonal component, i.e., a deseasonalized natural gas series. Plot the deseasonalized series over time and corresponding ACF and PACF. Compare with the plots obtained in Q1.
 
 ```{r}
+ng_decompose <- decompose(ng_ts, type="additive")
+plot(ng_decompose)
 
+ng_deaseasonal_decompose <- seasadj(ng_decompose)
+```
+
+
+```{r}
+#plot
+ggplot(ng_selected, aes(x=Month))+
+  geom_line(aes(y=ng_deaseasonal_decompose))
+
+#ACF
+Acf(ng_deaseasonal_decompose,lag.max = 40,main="Deseasonal Natural Gas ACF",ylim=c(-1,1))
+
+#PACF
+Pacf(ng_deaseasonal_decompose,lag.max = 40,main="Deseasonal Natural Gas PACF",ylim=c(-1,1))
 ```
 
 ## Modeling the seasonally adjusted or deseasonalized series
@@ -82,23 +99,37 @@ Using the $decompose()$ or $stl()$ and the $seasadj()$ functions create a series
 Run the ADF test and Mann Kendall test on the deseasonalized data from Q2. Report and explain the results.
 
 ```{r}
-
+print(adf.test(ng_deaseasonal_decompose))
+print(MannKendall(ng_deaseasonal_decompose))
 ```
+#The p-value for both the adf test and the MannKendall are both significant (p value is less than 0.05).The ADF test show that there isn't a unit root and that it is stationary. The MannKendall test shows that there's a trend.
 
 ### Q4
 
 Using the plots from Q2 and test results from Q3 identify the ARIMA model parameters $p,d$ and $q$. Note that in this case because you removed the seasonal component prior to identifying the model you don't need to worry about seasonal component. Clearly state your criteria and any additional function in R you might use. DO NOT use the $auto.arima()$ function. You will be evaluated on ability to can read the plots and interpret the test results.
 
 ```{r}
+#need to difference because even after deseasonalizing it there's still a slow decay in the ACF. 
+n_diff <- ndiffs(ng_deaseasonal_decompose)
+
+ng_diff <- diff(ng_deaseasonal_decompose, differences = 1)
+
+#ACF
+Acf(ng_diff,lag.max = 40,main="Differenced Natural Gas ACF",ylim=c(-1,1))
+
+#PACF
+Pacf(ng_diff,lag.max = 40,main="Differenced Natural Gas PACF",ylim=c(-1,1))
 
 ```
+#Based on the de-seasonal time series there's a slow decay in the ACF. This means that it's most likely an AR model. It is harder to tell what it is when it is differenced. The d is equal to 1 because you have to difference it once. You know you have to difference it at least once because there isn't any unit root. The p value is 1 because looking at the PACF there's only one significant lag zero. The q value is 1 because looking at the ACF there's only one significant lag after lag zero. 
 
 ### Q5
 
 Use $Arima()$ from package "forecast" to fit an ARIMA model to your series considering the order estimated in Q4. You should allow constants in the model, i.e., $include.mean = TRUE$ or $include.drift=TRUE$. **Print the coefficients** in your report. Hint: use the $cat()$ function to print.
 
 ```{r}
-
+Model_111 <- Arima(ng_diff,order=c(1,1,1),include.drift=TRUE)
+print(Model_111)
 ```
 
 ### Q6
