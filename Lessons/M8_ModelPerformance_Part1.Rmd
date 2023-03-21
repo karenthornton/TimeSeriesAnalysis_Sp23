@@ -23,10 +23,11 @@ Second R code chunk is for loading packages. By setting message = FALSE, the cod
 library(lubridate)
 library(ggplot2)
 library(forecast)  
-#library(Kendall)
+library(Kendall)
 library(tseries)
-#library(outliers)
+library(outliers)
 library(tidyverse)
+#install.packages("smooth")
 library(smooth)
 
 #New package for M9 to assist with tables
@@ -43,7 +44,7 @@ For this module we will continue to work with the electricity retail price in US
 
 #Importing time series data from text file#
 electricity_price <- read.csv(
-  file="./Data/Average_retail_price_of_electricity_United_States_monthly.csv",
+  file="/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/Average_retail_price_of_electricity_United_States_monthly.csv",
   header=TRUE,
   skip=4)
 
@@ -175,6 +176,8 @@ $MAPE = \sum|Actual - Forecast|/Actual/n*100$
 
 ```{r}
 observed <- electricity_price_processed[(nobs-n_for+1):nobs, "All.sectors"]
+#got the last 12 observations using the nobs-n_for+1
+
 #Model 1: Arithmetic mean
 MEAN_scores <- accuracy(MEAN_seas$mean,observed)  #store the performance metrics
 plot(MEAN_seas)  #plot forecasts
@@ -200,10 +203,11 @@ Now we will create a data frame that combines performance metrics for all the th
 seas_scores <- as.data.frame(rbind(MEAN_scores, SNAIVE_scores, SARIMA_scores))
 row.names(seas_scores) <- c("MEAN", "SNAIVE","SARIMA")
 
+#want the MAPE to be the smallest 
+
 #choose model with lowest RMSE
 best_model_index <- which.min(seas_scores[,"RMSE"])
 cat("The best model by RMSE is:", row.names(seas_scores[best_model_index,]))                       
-                            
 ```
 
 SARIMA was the best fit for the seasonal data. If you want generate a table to compare model accuracy and help visualize the results here is a suggestion on how to include a table on your Rmd report. You can use the `kable_styling(latex_options="striped")` to highlight the model that leads to minimum RMSE.
