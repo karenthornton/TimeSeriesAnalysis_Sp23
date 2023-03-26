@@ -169,6 +169,7 @@ plot(NAIVE_deseas)  #plot forecasts
 # Model 2:  ARIMA 
 #remember auto.arima does not call the forecast() internally so we need one more step
 ARIMA_forecast <- forecast(object = ARIMA_autofit, h = 12)
+#if assignment 8 insn't working then this might be why
 ARIMA_scores <- accuracy(ARIMA_forecast)
 plot(ARIMA_forecast)
 
