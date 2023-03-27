@@ -28,6 +28,7 @@ library(smooth)
 library(lubridate)
 library(zoo)
 library(dplyr)
+library(ggplot2)
 ```
 
 ## Importing and processing the data set
@@ -52,8 +53,23 @@ inflow_data<-mutate(inflow_data,Date=my(paste(inflow_data$V1,inflow_data$V2, sep
 #select the column
 inflow_data_select<- select(inflow_data,c(Date, V17))
 
-#get the right dates
-inflow_model_dates<- filter()
+#get the right dates January 2000 up to December 2009
+inflow_model_dates<- inflow_data_select %>%
+  filter(between(Date, as.Date("2000-01-01"), as.Date("2009-12-01")))
+
+#make a time series
+inflow_ts <- ts(inflow_model_dates$V17, frequency = 12, start = 1)
+
+#plot over time
+ggplot(inflow_model_dates)+
+  geom_line(aes(x=Date, y=V17))+
+  ylab("Inflow (m^{3}/s)")
+
+#ACF
+Acf(inflow_ts,lag.max = 40,main="Inflow ACF",ylim=c(-1,1))
+
+#PACF
+Pacf(inflow_ts,lag.max = 40,main="Inflow PACF",ylim=c(-1,1))
 ```
 
 ### Q2
