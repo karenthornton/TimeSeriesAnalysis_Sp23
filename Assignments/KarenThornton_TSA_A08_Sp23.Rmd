@@ -90,13 +90,13 @@ inflow_deseasonal <- seasadj(inflow_decompose)
 
 #make deseasonal a df
 inflow_deseason_df<- as.data.frame(inflow_deseasonal)
-inflow_deseason_df<-merge(inflow_deseason_df, inflow_model_dates$Date)
-colnames(inflow_deseason_df) <- c("Inflow", "Date")
+inflow_deseason_merge<-cbind(inflow_deseason_df, inflow_model_dates$Date)
+colnames(inflow_deseason_merge) <- c("Inflow", "Date")
 
 #plot
 ggplot()+
   geom_line(inflow_model_dates, mapping=aes(x=Date, y=V17))+
-  geom_line(inflow_deseason_df, mapping=aes(x=Date, y=Inflow, color="red"))+
+  geom_line(inflow_deseason_merge, mapping=aes(x=Date, y=Inflow, color="red"))+
   labs(colour="Deseasonal")+
   ylab("Inflow (m^{3}/s)")
 
@@ -152,7 +152,22 @@ Put the seasonality back on your forecasted values and compare with the original
 
 
 ```{r}
+#take the last year of seasonal
+inflow_full_decompose_df <- as.data.frame(inflow_full_decompose$seasonal)
+inflow_full_decompose_merge<-cbind(inflow_full_decompose_df,inflow_full_dates$Date)
+colnames(inflow_full_decompose_merge) <- c("Inflow Decompose", "Date")
 
+seasonal_lastyear <- inflow_full_decompose_merge %>%
+  filter(between(Date, as.Date("2010-01-01"), as.Date("2010-12-01")))
+
+summed_points<-seasonal_lastyear$`Inflow Decompose` + Q3_forecast$mean
+
+plot(summed_points)
+
+autoplot(ts_inflow_full) +
+    autolayer(summed_points,series="Seasonality Back",PI=FALSE) +
+    ylab("Inflow") +
+    xlab("")
 ```
 
 ### Q5
