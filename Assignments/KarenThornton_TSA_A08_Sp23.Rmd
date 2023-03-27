@@ -57,6 +57,10 @@ inflow_data_select<- select(inflow_data,c(Date, V17))
 inflow_model_dates<- inflow_data_select %>%
   filter(between(Date, as.Date("2000-01-01"), as.Date("2009-12-01")))
 
+#get the full dates
+inflow_full_dates<- inflow_data_select %>%
+  filter(between(Date, as.Date("2000-01-01"), as.Date("2010-12-01")))
+
 #make a time series
 inflow_ts <- ts(inflow_model_dates$V17, frequency = 12, start = 1)
 
@@ -77,8 +81,43 @@ Pacf(inflow_ts,lag.max = 40,main="Inflow PACF",ylim=c(-1,1))
 Using the $decompose()$ or $stl()$ and the $seasadj()$ functions create a series without the seasonal component, i.e., a deseasonalized inflow series. Plot the deseasonalized series and original series together using ggplot, make sure your plot includes a legend. Plot ACF and PACF for the deaseasonalized series. Compare with the plots obtained in Q1.
 
 ```{r}
+#decompose
+inflow_decompose <- decompose(inflow_ts, type="additive")
+plot(inflow_decompose)
+
+#deseasonalize
+inflow_deseasonal <- seasadj(inflow_decompose)
+
+#make deseasonal a df
+inflow_deseason_df<- as.data.frame(inflow_deseasonal)
+inflow_deseason_df<-merge(inflow_deseason_df, inflow_model_dates$Date)
+colnames(inflow_deseason_df) <- c("Inflow", "Date")
+
+#plot
+ggplot()+
+  geom_line(inflow_model_dates, mapping=aes(x=Date, y=V17))+
+  geom_line(inflow_deseason_df, mapping=aes(x=Date, y=Inflow, color="red"))+
+  labs(colour="Deseasonal")+
+  ylab("Inflow (m^{3}/s)")
+
+#ACF
+Acf(inflow_deseasonal,lag.max = 40,main="Inflow Deseasonal ACF",ylim=c(-1,1))
+
+#PACF
+Pacf(inflow_deseasonal,lag.max = 40,main="Inflow Deseasonal PACF",ylim=c(-1,1))
+
+#compare
+par(mfrow=c(1,2))
+  Acf(inflow_ts,lag.max = 40,main="Inflow ACF",ylim=c(-1,1))
+  Acf(inflow_deseasonal,lag.max = 40,main="Inflow Deseasonal ACF",ylim=c(-1,1))
+  
+par(mfrow=c(1,2))
+  Pacf(inflow_ts,lag.max = 40,main="Inflow PACF",ylim=c(-1,1))
+  Pacf(inflow_deseasonal,lag.max = 40,main="Inflow Deseasonal PACF",ylim=c(-1,1))
 
 ```
+#compare: Looking at the ACF for the deseasonal, there's a steady decline, and still shows a trend, but the seasonal part is drastically decreased. Looking at the PACF for the deseasonal, there's no drastic negative coorelation in lag 1 like there is in the original PACF. 
+
 
 ## Part II: Forecasting with ARIMA models and its variations
 
@@ -87,7 +126,24 @@ Using the $decompose()$ or $stl()$ and the $seasadj()$ functions create a series
 Fit a non-seasonal ARIMA$(p,d,q)$ model using the auto.arima() function to the non-seasonal data. Forecast 12 months ahead of time using the $forecast()$ function. Plot your forecasting results and further include on the plot the last year of non-seasonal data to compare with forecasted values (similar to the plot on the lesson file for M10).
 
 ```{r}
+Q3_auto_arima <-auto.arima(inflow_deseasonal)
+#result is ARIMA(0,1,0)
 
+#forecast
+Q3_forecast <- forecast(object = Q3_auto_arima, h=12)
+Q3_scores <- accuracy(Q3_forecast)
+plot(Q3_forecast)
+
+#create time series for all dates (including last year)
+ts_inflow_full <- ts(inflow_full_dates$V17, frequency = 12, start = 1)
+#deseason it
+inflow_full_decompose <- decompose(ts_inflow_full, type="additive")
+inflow_full_deseasonal <- seasadj(inflow_full_decompose)
+
+autoplot(inflow_full_deseasonal) +
+    autolayer(Q3_forecast,series="ARIMA",PI=FALSE) +
+    ylab("Inflow") +
+    xlab("")
 ```
 
 ### Q4
@@ -104,12 +160,32 @@ Put the seasonality back on your forecasted values and compare with the original
 Repeat Q3 for the original data, but now fit a seasonal ARIMA$(p,d,q)x(P,D,Q)_ {12}$ also using the auto.arima().
 
 ```{r}
+Q5_auto_sarima <-auto.arima(inflow_ts, seasonal = TRUE)
+print(Q4_auto_sarima)
+#result is ARIMA(1,0,0)(0,1,1)[12]
 
+#forecast
+Q5_forecast <- forecast(object = Q5_auto_sarima, h=12)
+Q5_scores <- accuracy(Q5_forecast)
+plot(Q5_forecast)
+
+autoplot(inflow_full_deseasonal) +
+    autolayer(Q5_forecast,series="SARIMA",PI=FALSE) +
+    ylab("Inflow") +
+    xlab("")
 ```
 
 ### Q6
 
 Compare the plots from Q4 and Q5 using the autoplot() function.
+
+```{r}
+autoplot(inflow_full_deseasonal) +
+    autolayer(Q5_forecast,series="SARIMA",PI=FALSE) +
+    autolayer(Q3_forecast,series="ARIMA",PI=FALSE)+
+    ylab("Inflow") +
+    xlab("")
+```
 
 ## Part III: Forecasting with Other Models
 
