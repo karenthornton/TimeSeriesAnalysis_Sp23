@@ -22,7 +22,12 @@ Some packages needed for this assignment: `forecast`,`tseries`,`smooth`. Do not 
 
 ```{r}
 #Load/install required package here
-
+library(forecast)
+library(tseries)
+library(smooth)
+library(lubridate)
+library(zoo)
+library(dplyr)
 ```
 
 ## Importing and processing the data set
@@ -38,7 +43,17 @@ For all parts of the assignment prepare the data set such that the model conside
 Read the file into a data frame. Prepare your time series data vector such that observations start in January 2000 and end in December 2009. Make you sure you specify the **start=** and **frequency=** arguments. Plot the time series over time, ACF and PACF.
 
 ```{r}
+#read in the data
+inflow_data <- read.table("/Users/karenthornton/Documents/School/Grad School/Year 2/Semester 2/Time Series/TimeSeriesAnalysis_Sp23/Data/inflowtimeseries.txt")
 
+#get data ready
+inflow_data<-mutate(inflow_data,Date=my(paste(inflow_data$V1,inflow_data$V2, sep = "")))
+
+#select the column
+inflow_data_select<- select(inflow_data,c(Date, V17))
+
+#get the right dates
+inflow_model_dates<- filter()
 ```
 
 ### Q2
