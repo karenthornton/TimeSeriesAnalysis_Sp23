@@ -194,7 +194,8 @@ autoplot(inflow_full_deseasonal) +
 Fit an exponential smooth model to the original time series using the function $ses()$  from package `forecast`. Note that this function automatically do the forecast. Do not forget to set the arguments: silent=FALSE and holdout=FALSE, so that the plot is produced and the forecast is for the year of 2010.
 
 ```{r}
-
+SES_deseas=ses(y = inflow_ts, h = 12, holdout = FALSE, silent = FALSE) 
+plot(SES_deseas)
 ```
 
 
@@ -206,7 +207,16 @@ Make one plot with the complete original seasonal historical data (Jan 2000 to D
 
 
 ```{r}
+ggplot(inflow_full_dates)+
+  geom_line(aes(x=Date, y=V17))+
+  ylab("Inflow")
 
+autoplot(inflow_full_deseasonal) +
+    autolayer(Q5_forecast,series="SARIMA",PI=FALSE) +
+    autolayer(Q3_forecast,series="ARIMA",PI=FALSE)+
+    autolayer(SES_deseas, series="Smooth", PI=FALSE)+
+    ylab("Inflow") +
+    xlab("")
 ```
 
 ### Q9
