@@ -273,6 +273,7 @@ forecast_season_final <- cbind(RMSE, MAPE)
 
 Final_df <- rbind(Arima_final, Sarima_final, Smooth_final, forecast_season_final)
 rownames(Final_df)= c("ARIMA", "SARIMA", "Smooth", "Forecast+Seasonality")
+print(Final_df)
 
 #smallest MAPE is ARIMA
 ```
