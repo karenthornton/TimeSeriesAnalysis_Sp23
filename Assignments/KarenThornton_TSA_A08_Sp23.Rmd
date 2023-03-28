@@ -161,11 +161,12 @@ seasonal_lastyear <- inflow_full_decompose_merge %>%
   filter(between(Date, as.Date("2010-01-01"), as.Date("2010-12-01")))
 
 summed_points<-seasonal_lastyear$`Inflow Decompose` + Q3_forecast$mean
+summed_ts <- ts(summed_points, frequency = 12, start = 1)
 
 plot(summed_points)
 
 autoplot(ts_inflow_full) +
-    autolayer(summed_points,series="Seasonality Back",PI=FALSE) +
+    autolayer(summed_points,series="Forecast + Seasonality",PI=FALSE) +
     ylab("Inflow") +
     xlab("")
 ```
@@ -176,7 +177,7 @@ Repeat Q3 for the original data, but now fit a seasonal ARIMA$(p,d,q)x(P,D,Q)_ {
 
 ```{r}
 Q5_auto_sarima <-auto.arima(inflow_ts, seasonal = TRUE)
-print(Q4_auto_sarima)
+print(Q5_auto_sarima)
 #result is ARIMA(1,0,0)(0,1,1)[12]
 
 #forecast
@@ -195,9 +196,9 @@ autoplot(inflow_full_deseasonal) +
 Compare the plots from Q4 and Q5 using the autoplot() function.
 
 ```{r}
-autoplot(inflow_full_deseasonal) +
-    autolayer(Q5_forecast,series="SARIMA",PI=FALSE) +
-    autolayer(Q3_forecast,series="ARIMA",PI=FALSE)+
+autoplot(ts_inflow_full) +
+    autolayer(summed_points,series="Forecast + Seasonality",PI=FALSE) +
+    autolayer(Q5_forecast,series="SARIMA",PI=FALSE)+
     ylab("Inflow") +
     xlab("")
 ```
@@ -229,6 +230,7 @@ ggplot(inflow_full_dates)+
 autoplot(inflow_full_deseasonal) +
     autolayer(Q5_forecast,series="SARIMA",PI=FALSE) +
     autolayer(Q3_forecast,series="ARIMA",PI=FALSE)+
+    autolayer(summed_points,series="Forecast + Seasonality",PI=FALSE) +
     autolayer(SES_deseas, series="Smooth", PI=FALSE)+
     ylab("Inflow") +
     xlab("")
@@ -238,16 +240,40 @@ autoplot(inflow_full_deseasonal) +
 
 From the plot in Q9 which model or model(s) are leading to the better forecasts? Explain your answer. Hint: Think about which models are doing a better job forecasting the high and low inflow months for example.
 
+#Answer: It looks like the best model is the smooth model. The ARIMA model looks like the second best and it looks like the Forecast + Seasonality and the SARIMA have too much seasonality. The smooth seems to be the best at getting the mean between the highs and lows. The ARIMA seems to be skewed a little towards the highs of the data, but still does a better job at predicting than the SARIMA and Forecast + Seasonality. 
 
-```{r}
-
-```
 
 ### Q10
 
 Now compute the following forecast metrics we learned in class: RMSE and MAPE,  for all the models you plotted in part Q9. You can do this by hand since your have forecasted and observed values for the year of 2010. Or you can use R function $accuracy()$ from package "forecast" to do it. Build and a table with the results and highlight the model with the lowest MAPE. Does the lowest MAPE corresponds match your answer for part Q10?
 
 ```{r}
+arima_scores <- accuracy(Q3_forecast)
+sarima_scores <- accuracy(Q5_forecast)
+smooth_scores <- accuracy(SES_deseas)
 
+#manually calculate Forecast +Seasonality RMSE and MAPE
+inflow_lastyear<- inflow_data_select %>%
+  filter(between(Date, as.Date("2010-01-01"), as.Date("2010-12-01")))
+
+last_year_ts <- ts(inflow_lastyear$V17, frequency = 12, start = 1)
+
+Actual <- last_year_ts
+Forecast <- summed_ts
+n=12
+
+MSE = sum(Actual - Forecast)^2/n
+RMSE = sqrt(MSE)
+MAPE = sum(abs(Actual - Forecast)/Actual)/n*100
+
+Arima_final <- cbind(arima_scores[2], arima_scores[5])
+Sarima_final <- cbind(sarima_scores[2], sarima_scores[5])
+Smooth_final <- cbind(smooth_scores[2], smooth_scores[5])
+forecast_season_final <- cbind(RMSE, MAPE)
+
+Final_df <- rbind(Arima_final, Sarima_final, Smooth_final, forecast_season_final)
+rownames(Final_df)= c("ARIMA", "SARIMA", "Smooth", "Forecast+Seasonality")
+
+#smallest MAPE is ARIMA
 ```
-
+#No, the best model here (ARIMA) was not the same as the one I predicted in quesiton 9. This may be because the ARIMA model accounts for more of the higher points. 
