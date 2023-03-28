@@ -48,10 +48,18 @@ vignettes/*.pdf
 *.Rproj
 *_KEY.Rmd
 *_TOPOST.Rmd
+*_NOPOST.xlsx
+*_NOPOST.csv
+*_NOPOST.txt
+*_NOPOST.Rmd
 
 #Mac files
 .DS_Store
 
 #Lesson pdf
+<<<<<<< HEAD
 *.pdf
 >>>>>>> 406804d9826e171bcdffb661aa76e3f5fd485f9d
+=======
+#*.pdf
+>>>>>>> 54345db4f8a86847a511277f58e026f7b58aac34
