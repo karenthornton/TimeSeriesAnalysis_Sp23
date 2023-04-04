@@ -281,6 +281,9 @@ ARIMA_Four_fit <- auto.arima(ts_act_power_daily_train,
                                           K=c(2,12))
                              )
 
+#the 2 is for weekend and weekday, 12 will be for the months
+#
+
 #Forecast with ARIMA fit
 #also need to specify h for fourier terms
 ARIMA_Four_for <- forecast(ARIMA_Four_fit,
@@ -300,7 +303,7 @@ autoplot(ts_act_power_daily) +
 
 ```
 
-### Model 3: TBATS
+### Model 3: TBATS (double seasonality)
 
 BATS is Exponential smoothing state space model with **B**ox-Cox transformation, **A**RMA errors, **T**rend and **S**easonal components. TBATS is a trigonometric seasonal variation of BATS. A Box Cox transformation is a transformation of non-normal dependent variables into a normal shape. 
 
